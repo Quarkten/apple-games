@@ -13,6 +13,19 @@ class GameScene: SKScene {
         player = Player(texture: nil, color: .blue, size: CGSize(width: 50, height: 50), gameScene: self)
         player?.position = CGPoint(x: frame.midX, y: frame.midY)
         addChild(player!)
+
+        startMission()
+    }
+
+    func startMission() {
+        guard let mission = MissionManager.shared.getCurrentMission() else {
+            // No more missions
+            return
+        }
+
+        for enemyType in mission.enemyTypes {
+            spawnEnemy(type: enemyType)
+        }
     }
 
     // User Input
@@ -66,9 +79,26 @@ class GameScene: SKScene {
         for enemy in enemies {
             enemy.update(dt: dt)
         }
+
+        enemies.removeAll { $0.health <= 0 }
+
+        if enemies.isEmpty {
+            missionComplete()
+        }
     }
 
-    func spawnEnemy() {
+    func missionComplete() {
+        guard let mission = MissionManager.shared.getCurrentMission() else { return }
+        print("Mission Complete!")
+        GameManager.shared.addResources(mission.reward)
+        print("You earned \(mission.reward) resources!")
+        MissionManager.shared.advanceToNextMission()
+        // You might want to clear the scene and show a mission complete screen
+        // before starting the next mission.
+        startMission()
+    }
+
+    func spawnEnemy(type: TroopType) {
         let enemy = Enemy(texture: nil, color: .purple, size: CGSize(width: 50, height: 50), player: player)
         enemy.position = CGPoint(x: frame.maxX - 100, y: frame.midY)
         enemies.append(enemy)
@@ -86,8 +116,10 @@ class GameScene: SKScene {
             spawnTroop(type: .jetpack)
         case 20: // 3
             spawnTroop(type: .tank)
-        case 21: // 4
-            spawnEnemy()
+        case 22: // 5
+            if let firstEnemy = enemies.first {
+                firstEnemy.takeDamage(50)
+            }
         default:
             break
         }

@@ -22,6 +22,10 @@ class GameManager {
         return false
     }
 
+    func addResources(_ amount: Int) {
+        resources += amount
+    }
+
     func handleMultiplayer() {
         // Handle multiplayer logic
     }

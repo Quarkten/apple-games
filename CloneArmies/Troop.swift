@@ -27,6 +27,13 @@ class Troop: SKSpriteNode {
     func upgrade() {
         isUpgraded = true
     }
+
+    func takeDamage(_ amount: Int) {
+        health -= amount
+        if health <= 0 {
+            removeFromParent()
+        }
+    }
 }
 
 // Sniper Troop
