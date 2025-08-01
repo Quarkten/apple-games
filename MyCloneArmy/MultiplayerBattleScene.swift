@@ -23,14 +23,35 @@ class MultiplayerBattleScene: SKScene {
         startBattle()
     }
 
-    func startBattle() {
-        // Simple combat logic: the army with more clones wins
-        if myArmy.clones.count > opponentArmy.clones.count {
-            print("You win!")
-        } else if myArmy.clones.count < opponentArmy.clones.count {
-            print("You lose!")
-        } else {
-            print("It's a draw!")
+    override func update(_ currentTime: TimeInterval) {
+        // Make clones attack each other
+        for myClone in myArmy.clones {
+            if let opponentClone = opponentArmy.clones.first {
+                myClone.attack(opponentClone)
+            }
         }
+
+        for opponentClone in opponentArmy.clones {
+            if let myClone = myArmy.clones.first {
+                opponentClone.attack(myClone)
+            }
+        }
+
+        // Remove dead clones
+        myArmy.clones.removeAll { $0.health <= 0 }
+        opponentArmy.clones.removeAll { $0.health <= 0 }
+
+        // Check for battle end
+        if myArmy.clones.isEmpty {
+            print("You lose!")
+            // End the battle
+        } else if opponentArmy.clones.isEmpty {
+            print("You win!")
+            // End the battle
+        }
+    }
+
+    func startBattle() {
+        // The battle will now be handled in the update method
     }
 }

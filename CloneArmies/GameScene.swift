@@ -1,7 +1,9 @@
 import SpriteKit
 
+/// The main scene for the game.
 class GameScene: SKScene {
-    // Properties
+    // MARK: - Properties
+
     private var lastUpdateTime: TimeInterval = 0
     private var player: Player?
     private var clones: [Clone] = []
@@ -9,10 +11,12 @@ class GameScene: SKScene {
     private var enemies: [Enemy] = []
     private var bosses: [Boss] = []
     private var challenge: Challenge?
+    private var isAttacking: Bool = false
     private var challengeTimer: TimeInterval = 0
     private var challengeEnemyCount: Int = 0
 
-    // Scene Lifecycle
+    // MARK: - Scene Lifecycle
+
     override func didMove(to view: SKView) {
         player = Player(texture: nil, color: .blue, size: CGSize(width: 50, height: 50), gameScene: self)
         player?.position = CGPoint(x: frame.midX, y: frame.midY)
@@ -58,14 +62,26 @@ class GameScene: SKScene {
         }
     }
 
-    // User Input
+    // MARK: - User Input
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        player?.move(to: location)
+        isAttacking.toggle()
     }
 
-    // Game Logic
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+
+        if isAttacking {
+            let direction = (location - player.position).normalized()
+            player.attack(direction: direction)
+        } else {
+            player.move(to: location)
+        }
+    }
+
+    // MARK: - Game Logic
+
     func spawnTroop(type: TroopType) {
         let troop: Troop
         switch type {
@@ -166,11 +182,11 @@ class GameScene: SKScene {
     func spawnEnemy(type: TroopType) {
         let troop: Troop
         if type == .tankBoss {
-            let boss = TankBoss(texture: nil, color: .black, size: CGSize(width: 150, height: 150))
+            let boss = TankBoss(texture: nil, color: .black, size: CGSize(width: 150, height: 150), player: player)
             bosses.append(boss)
             troop = boss
         } else {
-            let enemy = Enemy(texture: nil, color: .purple, size: CGSize(width: 50, height: 50), player: player)
+            let enemy = Enemy(texture: nil, color: .purple, size: CGSize(width: 50, height: 50), player: player, type: type)
             enemies.append(enemy)
             troop = enemy
         }

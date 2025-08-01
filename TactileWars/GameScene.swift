@@ -67,7 +67,9 @@ class GameScene: SKScene {
             pathNode?.path = path
         case .ended:
             if let path = pathNode?.path {
-                for troop in troops {
+                for (index, troop) in troops.enumerated() {
+                    let offset = CGPoint(x: 0, y: (index - troops.count / 2) * 40)
+                    troop.formationOffset = offset
                     troop.move(along: path)
                 }
             }

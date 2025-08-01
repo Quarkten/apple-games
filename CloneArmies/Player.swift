@@ -11,7 +11,7 @@ class Player: SKSpriteNode {
     init(texture: SKTexture?, color: UIColor, size: CGSize, gameScene: GameScene?) {
         self.gameScene = gameScene
         super.init(texture: texture, color: color, size: size)
-        // Additional setup
+        self.zPosition = Constants.ZPositions.player
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -29,9 +29,9 @@ class Player: SKSpriteNode {
         recordAction(moveAction)
     }
 
-    func attack() {
+    func attack(direction: CGVector) {
         let attackAction = SKAction.run { [weak self] in
-            self?.equippedWeapon?.fire()
+            self?.equippedWeapon?.fire(direction: direction)
         }
         self.run(attackAction)
         recordAction(attackAction)

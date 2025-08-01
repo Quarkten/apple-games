@@ -1,8 +1,11 @@
 import SpriteKit
 
 class Boss: Troop {
-    init(texture: SKTexture?, color: UIColor, size: CGSize) {
-        super.init(texture: texture, color: color, size: size, type: .sniper) // Bosses are a special type
+    weak var player: Player?
+
+    init(texture: SKTexture?, color: UIColor, size: CGSize, player: Player?) {
+        self.player = player
+        super.init(texture: texture, color: color, size: size, type: .tankBoss)
         self.health = 1000
         self.attackPower = 50
     }
@@ -17,6 +20,14 @@ class Boss: Troop {
 }
 
 class TankBoss: Boss {
+    init(texture: SKTexture?, color: UIColor, size: CGSize, player: Player?) {
+        super.init(texture: texture, color: color, size: size, player: player)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func specialAttack() {
         let rocket = SKSpriteNode(color: .red, size: CGSize(width: 20, height: 10))
         rocket.position = self.position

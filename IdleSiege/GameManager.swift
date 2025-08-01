@@ -21,7 +21,7 @@ class GameManager {
     func applicationDidBecomeActive() {
         let offlineTime = Date().timeIntervalSince(lastOnlineTime)
         let offlineResources = Int(offlineTime) * getResourceGenerationRate()
-        ResourceManager.shared.addGold(offlineResources)
+        ResourceManager.shared.addResource(offlineResources, type: .gold)
     }
 
     private func getResourceGenerationRate() -> Int {

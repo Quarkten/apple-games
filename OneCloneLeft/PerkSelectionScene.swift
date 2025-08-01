@@ -11,10 +11,16 @@ class PerkSelectionScene: SKScene {
                 player.health += Int(Double(player.health) * 0.2)
             }),
             Perk(name: "Faster Reload", description: "Increases reload speed by 30%", effect: { player in
-                // player.weapon.reloadSpeed *= 0.7
+                player.weapon?.reloadTime *= 0.7
             }),
             Perk(name: "More Damage", description: "Increases damage by 25%", effect: { player in
-                // player.weapon.damage *= 1.25
+                player.weapon?.damage = Int(Double(player.weapon?.damage ?? 0) * 1.25)
+            }),
+            Perk(name: "Increased Fire Rate", description: "Increases fire rate by 20%", effect: { player in
+                player.weapon?.fireRate *= 0.8
+            }),
+            Perk(name: "Extra Clone", description: "Allows you to have one more clone", effect: { player in
+                // player.maxClones += 1
             })
         ]
 

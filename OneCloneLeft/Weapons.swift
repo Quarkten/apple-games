@@ -3,7 +3,9 @@ import SpriteKit
 class Pistol: Weapon {
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)
-        // Set pistol stats
+        self.damage = 10
+        self.fireRate = 0.5
+        self.reloadTime = 1.0
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -14,7 +16,9 @@ class Pistol: Weapon {
 class Shotgun: Weapon {
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)
-        // Set shotgun stats
+        self.damage = 30
+        self.fireRate = 1.0
+        self.reloadTime = 1.5
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -29,7 +33,9 @@ class Shotgun: Weapon {
 class Rifle: Weapon {
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)
-        // Set rifle stats
+        self.damage = 20
+        self.fireRate = 0.2
+        self.reloadTime = 2.0
     }
 
     required init?(coder aDecoder: NSCoder) {

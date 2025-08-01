@@ -14,6 +14,12 @@ class UpgradeScene: SKScene {
         upgradeArmyButton.name = "upgrade_army"
         upgradeArmyButton.position = CGPoint(x: frame.midX, y: frame.midY - 50)
         addChild(upgradeArmyButton)
+
+        let upgradeHealthButton = SKLabelNode(fontNamed: "Chalkduster")
+        upgradeHealthButton.text = "Upgrade Health"
+        upgradeHealthButton.name = "upgrade_health"
+        upgradeHealthButton.position = CGPoint(x: frame.midX, y: frame.midY - 150)
+        addChild(upgradeHealthButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -34,6 +40,8 @@ class UpgradeScene: SKScene {
             UpgradeSystem.shared.upgradeWeapon()
         case "upgrade_army":
             UpgradeSystem.shared.upgradeArmy()
+        case "upgrade_health":
+            UpgradeSystem.shared.upgradeHealth()
         default:
             break
         }
