@@ -7,6 +7,9 @@ class GameScene: SKScene {
     private var clones: [Clone] = []
     private var troops: [Troop] = []
     private var enemies: [Enemy] = []
+    private var challenge: Challenge?
+    private var challengeTimer: TimeInterval = 0
+    private var challengeEnemyCount: Int = 0
 
     // Scene Lifecycle
     override func didMove(to view: SKView) {
@@ -17,6 +20,11 @@ class GameScene: SKScene {
         startMission()
     }
 
+    convenience init(challenge: Challenge) {
+        self.init(size: CGSize(width: 1024, height: 768)) // Or your desired size
+        self.challenge = challenge
+    }
+
     func startMission() {
         guard let mission = MissionManager.shared.getCurrentMission() else {
             // No more missions
@@ -25,6 +33,27 @@ class GameScene: SKScene {
 
         for enemyType in mission.enemyTypes {
             spawnEnemy(type: enemyType)
+        }
+    }
+
+    func startChallenge() {
+        guard let challenge = challenge else { return }
+
+        switch challenge.objective {
+        case .survive(let duration):
+            challengeTimer = duration
+            // Spawn enemies continuously
+            let spawnAction = SKAction.repeatForever(SKAction.sequence([
+                SKAction.run { self.spawnEnemy(type: .sniper) },
+                SKAction.wait(forDuration: 5.0)
+            ]))
+            run(spawnAction)
+        case .defeatEnemies(let count):
+            challengeEnemyCount = count
+            // Spawn initial enemies
+            for _ in 0..<5 {
+                spawnEnemy(type: .sniper)
+            }
         }
     }
 
@@ -82,9 +111,30 @@ class GameScene: SKScene {
 
         enemies.removeAll { $0.health <= 0 }
 
-        if enemies.isEmpty {
-            missionComplete()
+        if let challenge = challenge {
+            switch challenge.objective {
+            case .survive(let duration):
+                challengeTimer -= dt
+                if challengeTimer <= 0 {
+                    challengeComplete()
+                }
+            case .defeatEnemies(var count):
+                let defeatedEnemies = challengeEnemyCount - enemies.count
+                if defeatedEnemies >= count {
+                    challengeComplete()
+                }
+            }
+        } else {
+            if enemies.isEmpty {
+                missionComplete()
+            }
         }
+    }
+
+    func challengeComplete() {
+        print("Challenge Complete!")
+        // Give reward
+        // Go back to main menu or show a victory screen
     }
 
     func missionComplete() {
@@ -119,6 +169,12 @@ class GameScene: SKScene {
         case 22: // 5
             if let firstEnemy = enemies.first {
                 firstEnemy.takeDamage(50)
+            }
+        case 23: // 6
+            if let challenge = ChallengeManager.shared.getWeeklyChallenge() {
+                let newScene = GameScene(challenge: challenge)
+                newScene.scaleMode = .aspectFill
+                view?.presentScene(newScene)
             }
         default:
             break
