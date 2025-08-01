@@ -2,7 +2,9 @@ import SpriteKit
 
 class BaseScene: SKScene {
     private var base: Base!
-    private var resourceLabel: SKLabelNode!
+    private var goldLabel: SKLabelNode!
+    private var woodLabel: SKLabelNode!
+    private var stoneLabel: SKLabelNode!
 
     override func didMove(to view: SKView) {
         base = Base()
@@ -10,11 +12,20 @@ class BaseScene: SKScene {
     }
 
     func setupUI() {
-        // Create resource label
-        resourceLabel = SKLabelNode(fontNamed: "Chalkduster")
-        resourceLabel.text = "Gold: \(ResourceManager.shared.getResourceAmount(for: .gold))"
-        resourceLabel.position = CGPoint(x: frame.midX, y: frame.maxY - 50)
-        addChild(resourceLabel)
+        // Create resource labels
+        goldLabel = SKLabelNode(fontNamed: "Chalkduster")
+        goldLabel.position = CGPoint(x: 100, y: frame.maxY - 50)
+        addChild(goldLabel)
+
+        woodLabel = SKLabelNode(fontNamed: "Chalkduster")
+        woodLabel.position = CGPoint(x: 300, y: frame.maxY - 50)
+        addChild(woodLabel)
+
+        stoneLabel = SKLabelNode(fontNamed: "Chalkduster")
+        stoneLabel.position = CGPoint(x: 500, y: frame.maxY - 50)
+        addChild(stoneLabel)
+
+        updateResourceLabel()
 
         // Create build buttons
         let buildBarracksButton = SKLabelNode(fontNamed: "Chalkduster")
@@ -81,12 +92,24 @@ class BaseScene: SKScene {
             building = ResourceGenerator()
         case "train_troop":
             let troop = Troop(type: .swordsman) // Default to swordsman for now
-            if ResourceManager.shared.spendResource(troop.trainingCost, type: .gold) {
+            var canAfford = true
+            for (resource, amount) in troop.trainingCost {
+                if !ResourceManager.shared.spendResource(amount, type: resource) {
+                    canAfford = false
+                    break
+                }
+            }
+
+            if canAfford {
                 base.addTroop(troop)
                 print("Trained a troop!")
                 updateResourceLabel()
             } else {
-                print("Not enough gold!")
+                print("Not enough resources!")
+                // Refund the spent resources
+                for (resource, amount) in troop.trainingCost {
+                    ResourceManager.shared.addResource(amount, type: resource)
+                }
             }
             return
         case "build_academy":
@@ -115,16 +138,30 @@ class BaseScene: SKScene {
             return
         }
 
-        if ResourceManager.shared.spendResource(building.cost, type: .gold) {
+        var canAfford = true
+        for (resource, amount) in building.cost {
+            if !ResourceManager.shared.spendResource(amount, type: resource) {
+                canAfford = false
+                break
+            }
+        }
+
+        if canAfford {
             base.addBuilding(building)
             print("Built a \(building.type)!")
             updateResourceLabel()
         } else {
-            print("Not enough gold!")
+            print("Not enough resources!")
+            // Refund the spent resources
+            for (resource, amount) in building.cost {
+                ResourceManager.shared.addResource(amount, type: resource)
+            }
         }
     }
 
     func updateResourceLabel() {
-        resourceLabel.text = "Gold: \(ResourceManager.shared.getResourceAmount(for: .gold))"
+        goldLabel.text = "Gold: \(ResourceManager.shared.getResourceAmount(for: .gold))"
+        woodLabel.text = "Wood: \(ResourceManager.shared.getResourceAmount(for: .wood))"
+        stoneLabel.text = "Stone: \(ResourceManager.shared.getResourceAmount(for: .stone))"
     }
 }

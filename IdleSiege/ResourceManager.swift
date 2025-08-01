@@ -3,6 +3,8 @@ import Foundation
 enum ResourceType: String, CaseIterable {
     case gold
     case cash
+    case wood
+    case stone
 }
 
 class ResourceManager {

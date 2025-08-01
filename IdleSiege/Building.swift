@@ -4,6 +4,8 @@ enum BuildingType {
     case barracks
     case resourceGenerator
     case academy
+    case lumberMill
+    case quarry
 }
 
 // Base Building Class
@@ -12,18 +14,21 @@ class Building {
     var level: Int = 1
     var isUpgrading: Bool = false
     var type: BuildingType
-    var cost: Int
-    var resourceGenerationRate: Int
+    var cost: [ResourceType: Int]
+    var resourceGenerationRate: [ResourceType: Int]
 
     // Initializer
     init(type: BuildingType) {
         self.type = type
+        self.cost = [:]
+        self.resourceGenerationRate = [:]
         if let data = buildingData[type] {
-            self.cost = data.baseCost * level
-            self.resourceGenerationRate = data.baseResourceGenerationRate * level
-        } else {
-            self.cost = 0
-            self.resourceGenerationRate = 0
+            for (resource, amount) in data.baseCost {
+                self.cost[resource] = amount * level
+            }
+            for (resource, amount) in data.baseResourceGenerationRate {
+                self.resourceGenerationRate[resource] = amount * level
+            }
         }
     }
 
@@ -31,8 +36,12 @@ class Building {
     func upgrade() {
         level += 1
         if let data = buildingData[type] {
-            self.cost = data.baseCost * level
-            self.resourceGenerationRate = data.baseResourceGenerationRate * level
+            for (resource, amount) in data.baseCost {
+                self.cost[resource] = amount * level
+            }
+            for (resource, amount) in data.baseResourceGenerationRate {
+                self.resourceGenerationRate[resource] = amount * level
+            }
         }
     }
 }
@@ -55,5 +64,19 @@ class ResourceGenerator: Building {
 class Academy: Building {
     init() {
         super.init(type: .academy)
+    }
+}
+
+// Lumber Mill Building
+class LumberMill: Building {
+    init() {
+        super.init(type: .lumberMill)
+    }
+}
+
+// Quarry Building
+class Quarry: Building {
+    init() {
+        super.init(type: .quarry)
     }
 }
