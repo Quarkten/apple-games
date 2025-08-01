@@ -4,6 +4,8 @@ class UpgradeSystem {
     // Properties
     static let shared = UpgradeSystem()
     var coins: Int = 0
+    var weaponUpgradeLevel: Int = 1
+    var armyUpgradeLevel: Int = 1
 
     // Private init for singleton
     private init() {}
@@ -19,5 +21,25 @@ class UpgradeSystem {
             return true
         }
         return false
+    }
+
+    func upgradeWeapon() {
+        let cost = 100 * weaponUpgradeLevel
+        if spendCoins(cost) {
+            weaponUpgradeLevel += 1
+            print("Weapon upgraded to level \(weaponUpgradeLevel)!")
+        } else {
+            print("Not enough coins to upgrade weapon!")
+        }
+    }
+
+    func upgradeArmy() {
+        let cost = 200 * armyUpgradeLevel
+        if spendCoins(cost) {
+            armyUpgradeLevel += 1
+            print("Army upgraded to level \(armyUpgradeLevel)!")
+        } else {
+            print("Not enough coins to upgrade army!")
+        }
     }
 }
