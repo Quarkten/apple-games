@@ -4,6 +4,7 @@ enum TroopType {
     case sniper
     case jetpack
     case tank
+    case tankBoss
 }
 
 // Base Troop Class

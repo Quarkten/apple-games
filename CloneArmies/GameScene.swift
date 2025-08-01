@@ -7,6 +7,7 @@ class GameScene: SKScene {
     private var clones: [Clone] = []
     private var troops: [Troop] = []
     private var enemies: [Enemy] = []
+    private var bosses: [Boss] = []
     private var challenge: Challenge?
     private var challengeTimer: TimeInterval = 0
     private var challengeEnemyCount: Int = 0
@@ -109,6 +110,12 @@ class GameScene: SKScene {
             enemy.update(dt: dt)
         }
 
+        for boss in bosses {
+            if Int.random(in: 0...100) < 5 { // 5% chance to use special attack
+                boss.specialAttack()
+            }
+        }
+
         let defeatedEnemies = enemies.filter { $0.health <= 0 }
         for _ in defeatedEnemies {
             enemyDefeated()
@@ -157,10 +164,18 @@ class GameScene: SKScene {
     }
 
     func spawnEnemy(type: TroopType) {
-        let enemy = Enemy(texture: nil, color: .purple, size: CGSize(width: 50, height: 50), player: player)
-        enemy.position = CGPoint(x: frame.maxX - 100, y: frame.midY)
-        enemies.append(enemy)
-        addChild(enemy)
+        let troop: Troop
+        if type == .tankBoss {
+            let boss = TankBoss(texture: nil, color: .black, size: CGSize(width: 150, height: 150))
+            bosses.append(boss)
+            troop = boss
+        } else {
+            let enemy = Enemy(texture: nil, color: .purple, size: CGSize(width: 50, height: 50), player: player)
+            enemies.append(enemy)
+            troop = enemy
+        }
+        troop.position = CGPoint(x: frame.maxX - 100, y: frame.midY)
+        addChild(troop)
     }
 
     // Temp for testing

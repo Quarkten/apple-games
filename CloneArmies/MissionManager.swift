@@ -15,7 +15,8 @@ class MissionManager {
         missions = [
             Mission(missionID: 1, objectives: ["Defeat all enemies"], enemyTypes: [.sniper, .sniper], reward: 100),
             Mission(missionID: 2, objectives: ["Defeat all enemies"], enemyTypes: [.jetpack, .jetpack, .sniper], reward: 200),
-            Mission(missionID: 3, objectives: ["Defeat all enemies"], enemyTypes: [.tank, .sniper], reward: 300)
+            Mission(missionID: 3, objectives: ["Defeat all enemies"], enemyTypes: [.tank, .sniper], reward: 300),
+            Mission(missionID: 4, objectives: ["Defeat the boss"], enemyTypes: [.tankBoss], reward: 1000)
         ]
     }
 
