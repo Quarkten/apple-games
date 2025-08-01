@@ -14,6 +14,8 @@ class GameScene: SKScene {
     private var isAttacking: Bool = false
     private var challengeTimer: TimeInterval = 0
     private var challengeEnemyCount: Int = 0
+    private var hud: HUD!
+    private var attackModeIndicator: SKShapeNode!
 
     // MARK: - Scene Lifecycle
 
@@ -21,6 +23,16 @@ class GameScene: SKScene {
         player = Player(texture: nil, color: .blue, size: CGSize(width: 50, height: 50), gameScene: self)
         player?.position = CGPoint(x: frame.midX, y: frame.midY)
         addChild(player!)
+
+        hud = HUD()
+        hud.position = CGPoint(x: 0, y: view.frame.height - 100)
+        addChild(hud)
+
+        attackModeIndicator = SKShapeNode(rect: self.frame)
+        attackModeIndicator.strokeColor = .red
+        attackModeIndicator.lineWidth = 10
+        attackModeIndicator.isHidden = true
+        addChild(attackModeIndicator)
 
         startMission()
     }
@@ -66,6 +78,7 @@ class GameScene: SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         isAttacking.toggle()
+        attackModeIndicator.isHidden = !isAttacking
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -122,6 +135,12 @@ class GameScene: SKScene {
         let dt = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
 
+        hud.updateHealth(player.health)
+        hud.updateResources(GameManager.shared.resources)
+        if let mission = MissionManager.shared.getCurrentMission() {
+            hud.updateObjective(mission.title)
+        }
+
         for enemy in enemies {
             enemy.update(dt: dt)
         }
@@ -129,6 +148,21 @@ class GameScene: SKScene {
         for boss in bosses {
             if Int.random(in: 0...100) < 5 { // 5% chance to use special attack
                 boss.specialAttack()
+            }
+        }
+
+        for projectile in self.children.compactMap({ $0 as? Projectile }) {
+            for enemy in enemies {
+                if projectile.intersects(enemy) {
+                    enemy.takeDamage(projectile.damage)
+                    projectile.removeFromParent()
+                }
+            }
+            for boss in bosses {
+                if projectile.intersects(boss) {
+                    boss.takeDamage(projectile.damage)
+                    projectile.removeFromParent()
+                }
             }
         }
 
@@ -151,9 +185,21 @@ class GameScene: SKScene {
                     challengeComplete()
                 }
             }
-        } else {
-            if enemies.isEmpty {
-                missionComplete()
+        } else if let mission = MissionManager.shared.getCurrentMission() {
+            switch mission.objective {
+            case .defeatAllEnemies:
+                if enemies.isEmpty && bosses.isEmpty {
+                    missionComplete()
+                }
+            case .survive(let duration):
+                challengeTimer -= dt
+                if challengeTimer <= 0 {
+                    missionComplete()
+                }
+            case .defeatBoss:
+                if bosses.isEmpty {
+                    missionComplete()
+                }
             }
         }
     }
@@ -165,7 +211,7 @@ class GameScene: SKScene {
     }
 
     func enemyDefeated() {
-        // This method can be overridden by subclasses
+        SoundManager.shared.playSound(named: "explosion")
     }
 
     func missionComplete() {
@@ -217,6 +263,10 @@ class GameScene: SKScene {
             }
         case 24: // 7
             let newScene = UpgradeScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+        case 25: // 8
+            let newScene = MainMenuScene(size: self.size)
             newScene.scaleMode = .aspectFill
             view?.presentScene(newScene)
         default:

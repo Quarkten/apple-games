@@ -106,13 +106,15 @@ class Weapon: SKSpriteNode {
 
     // Methods
     func fire(direction: CGVector) {
-        let projectile = Projectile(color: .yellow, size: CGSize(width: 10, height: 5))
-        projectile.position = self.position
-        projectile.damage = self.damage
-        self.parent?.addChild(projectile)
+        if let gameScene = (self.parent as? Player)?.gameScene {
+            let projectile = Projectile(texture: nil, color: .yellow, size: CGSize(width: 10, height: 5), gameScene: gameScene)
+            projectile.position = self.position
+            projectile.damage = self.damage
+            gameScene.addChild(projectile)
 
-        let moveAction = SKAction.move(by: direction * 1000, duration: 2.0)
-        let removeAction = SKAction.removeFromParent()
-        projectile.run(SKAction.sequence([moveAction, removeAction]))
+            let moveAction = SKAction.move(by: direction * 1000, duration: 2.0)
+            let removeAction = SKAction.removeFromParent()
+            projectile.run(SKAction.sequence([moveAction, removeAction]))
+        }
     }
 }

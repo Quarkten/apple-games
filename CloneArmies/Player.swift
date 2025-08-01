@@ -32,6 +32,7 @@ class Player: SKSpriteNode {
     func attack(direction: CGVector) {
         let attackAction = SKAction.run { [weak self] in
             self?.equippedWeapon?.fire(direction: direction)
+            SoundManager.shared.playSound(named: "laser_shoot")
         }
         self.run(attackAction)
         recordAction(attackAction)
