@@ -16,6 +16,21 @@ class GameScene: SKScene {
         cloneButton.name = "clone"
         cloneButton.position = CGPoint(x: frame.minX + 100, y: frame.minY + 100)
         addChild(cloneButton)
+
+        startMission()
+    }
+
+    func startMission() {
+        guard let mission = MissionManager.shared.getCurrentMission() else { return }
+        for wave in mission.enemyWaves {
+            for enemyType in wave {
+                let enemy = enemyType.init(texture: nil, color: .red, size: CGSize(width: 40, height: 40))
+                // Position the enemy
+                // addChild(enemy)
+                // self.enemies.append(enemy)
+            }
+            // Add a delay between waves
+        }
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
