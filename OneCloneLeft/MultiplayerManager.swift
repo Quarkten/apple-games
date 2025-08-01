@@ -8,6 +8,7 @@ class MultiplayerManager: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiser
     var peerID: MCPeerID!
     var browser: MCNearbyServiceBrowser!
     var advertiser: MCNearbyServiceAdvertiser!
+    var maxPlayers: Int = 4 // Default to 4 players for co-op
 
     // Private init for singleton
     private override init() {
@@ -39,7 +40,11 @@ class MultiplayerManager: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiser
 
     // MCNearbyServiceAdvertiserDelegate methods
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        invitationHandler(true, session)
+        if session.connectedPeers.count < maxPlayers - 1 {
+            invitationHandler(true, session)
+        } else {
+            invitationHandler(false, nil)
+        }
     }
 
     // MCNearbyServiceBrowserDelegate methods
