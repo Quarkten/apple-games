@@ -109,6 +109,10 @@ class GameScene: SKScene {
             enemy.update(dt: dt)
         }
 
+        let defeatedEnemies = enemies.filter { $0.health <= 0 }
+        for _ in defeatedEnemies {
+            enemyDefeated()
+        }
         enemies.removeAll { $0.health <= 0 }
 
         if let challenge = challenge {
@@ -135,6 +139,10 @@ class GameScene: SKScene {
         print("Challenge Complete!")
         // Give reward
         // Go back to main menu or show a victory screen
+    }
+
+    func enemyDefeated() {
+        // This method can be overridden by subclasses
     }
 
     func missionComplete() {
