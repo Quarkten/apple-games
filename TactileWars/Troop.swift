@@ -1,13 +1,36 @@
 import SpriteKit
 
+enum TroopType {
+    case infantry
+    case ranged
+    case cavalry
+}
+
 class Troop: SKSpriteNode {
     // Properties
     var health: Int = 100
     var movementSpeed: CGFloat = 100.0
+    var formationOffset: CGPoint = .zero
+    var type: TroopType
+    var attackPower: Int
+    var attackRange: CGFloat
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize) {
-        super.init(texture: texture, color: color, size: size)
+    init(type: TroopType) {
+        self.type = type
+        let texture = SpriteManager.shared.getTexture(for: type)
+        switch type {
+        case .infantry:
+            self.attackPower = 10
+            self.attackRange = 50
+        case .ranged:
+            self.attackPower = 5
+            self.attackRange = 200
+        case .cavalry:
+            self.attackPower = 15
+            self.attackRange = 75
+        }
+        super.init(texture: texture, color: .clear, size: texture?.size() ?? .zero)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -17,6 +40,65 @@ class Troop: SKSpriteNode {
     // Methods
     func move(along path: CGPath) {
         let followPath = SKAction.follow(path, asOffset: false, orientToPath: true, speed: movementSpeed)
-        self.run(followPath)
+        let endPoint = path.boundingBox.origin + path.boundingBox.size
+        let formationPoint = endPoint + formationOffset
+        let moveToAction = SKAction.move(to: formationPoint, duration: 0.5)
+        self.run(SKAction.sequence([followPath, moveToAction]))
+    }
+
+    func takeDamage(_ damage: Int) {
+        health -= damage
+        if health <= 0 {
+            die()
+        }
+    }
+
+    func walk() {
+        if let animation = AnimationManager.shared.getAnimation(for: type, named: "walk") {
+            self.run(SKAction.repeatForever(animation))
+        }
+    }
+
+    func attack() {
+        if let animation = AnimationManager.shared.getAnimation(for: type, named: "attack") {
+            self.run(animation)
+        }
+    }
+
+    func die() {
+        if let animation = AnimationManager.shared.getAnimation(for: type, named: "death") {
+            self.run(animation) {
+                self.removeFromParent()
+            }
+        } else {
+            self.removeFromParent()
+        }
+    }
+}
+
+extension CGPoint {
+    static func + (left: CGPoint, right: CGPoint) -> CGPoint {
+        return CGPoint(x: left.x + right.x, y: left.y + right.y)
+    }
+
+    static func - (left: CGPoint, right: CGPoint) -> CGPoint {
+        return CGPoint(x: left.x - right.x, y: left.y - right.y)
+    }
+}
+
+extension CGSize {
+    static func + (left: CGSize, right: CGSize) -> CGSize {
+        return CGSize(width: left.width + right.width, height: left.height + right.height)
+    }
+}
+
+extension CGPoint {
+    func distance(to point: CGPoint) -> CGFloat {
+        return sqrt(pow(point.x - x, 2) + pow(point.y - y, 2))
+    }
+
+    func normalized() -> CGPoint {
+        let length = self.distance(to: .zero)
+        return CGPoint(x: self.x / length, y: self.y / length)
     }
 }

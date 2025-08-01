@@ -1,15 +1,21 @@
 import Foundation
 
+enum TroopType {
+    case swordsman
+}
+
 class Troop {
     // Properties
     var level: Int = 1
     var attackPower: Int = 10
     var defense: Int = 5
-    var trainingCost: Int
+    var trainingCost: [ResourceType: Int]
+    var type: TroopType
 
     // Initializer
-    init() {
-        self.trainingCost = 50 * level
+    init(type: TroopType) {
+        self.type = type
+        self.trainingCost = [.gold: 50 * level]
     }
 
     // Methods
@@ -17,6 +23,12 @@ class Troop {
         level += 1
         attackPower += 5
         defense += 2
-        trainingCost = 50 * level
+        trainingCost[.gold] = 50 * level
+    }
+}
+
+class Swordsman: Troop {
+    init() {
+        super.init(type: .swordsman)
     }
 }

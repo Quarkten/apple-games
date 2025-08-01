@@ -1,13 +1,20 @@
 import SpriteKit
 
+enum EnemyState {
+    case idle
+    case chasing
+    case attacking
+}
+
 class Enemy: Troop {
     // Properties
     weak var player: Player?
+    var state: EnemyState = .idle
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize, player: Player?) {
+    init(texture: SKTexture?, color: UIColor, size: CGSize, player: Player?, type: TroopType) {
         self.player = player
-        super.init(texture: texture, color: color, size: size, type: .sniper) // Default to sniper for now
+        super.init(texture: texture, color: color, size: size, type: type)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -17,9 +24,31 @@ class Enemy: Troop {
     // Methods
     func update(dt: TimeInterval) {
         guard let player = player else { return }
-        let direction = (player.position - self.position).normalized()
-        let velocity = direction * 100.0
-        self.position += velocity * CGFloat(dt)
+
+        switch state {
+        case .idle:
+            if self.position.distance(to: player.position) < 300 {
+                state = .chasing
+            }
+        case .chasing:
+            let direction = (player.position - self.position).normalized()
+            let velocity = direction * 100.0
+            self.position += velocity * CGFloat(dt)
+            if self.position.distance(to: player.position) < 100 {
+                state = .attacking
+            }
+        case .attacking:
+            // Attack the player
+            if self.position.distance(to: player.position) > 150 {
+                state = .chasing
+            }
+        }
+    }
+}
+
+extension CGPoint {
+    func distance(to point: CGPoint) -> CGFloat {
+        return sqrt(pow(point.x - x, 2) + pow(point.y - y, 2))
     }
 }
 

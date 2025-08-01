@@ -9,8 +9,8 @@ class ArmyManager {
     private init() {}
 
     // Methods
-    func createClone() {
-        // Logic to create a new clone
+    func addClone(_ clone: PlayerClone) {
+        clones.append(clone)
     }
 
     func upgradeArmy() {

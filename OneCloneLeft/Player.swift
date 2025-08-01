@@ -4,6 +4,7 @@ class Player: SKSpriteNode {
     private var clones: [PlayerClone] = []
     var weapon: Weapon?
     var unlockedPerks: [Perk] = []
+    var health: Int = 100
 
     func addPerk(_ perk: Perk) {
         unlockedPerks.append(perk)

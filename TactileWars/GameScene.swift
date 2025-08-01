@@ -9,9 +9,15 @@ class GameScene: SKScene {
         view.addGestureRecognizer(panGesture)
 
         // Create some troops
-        for i in 0..<5 {
-            let troop = Troop(texture: nil, color: .blue, size: CGSize(width: 30, height: 30))
+        for i in 0..<3 {
+            let troop = Troop(type: .infantry)
             troop.position = CGPoint(x: 100 + i * 40, y: 100)
+            troops.append(troop)
+            addChild(troop)
+        }
+        for i in 0..<2 {
+            let troop = Troop(type: .ranged)
+            troop.position = CGPoint(x: 100 + i * 40, y: 150)
             troops.append(troop)
             addChild(troop)
         }
@@ -67,7 +73,10 @@ class GameScene: SKScene {
             pathNode?.path = path
         case .ended:
             if let path = pathNode?.path {
-                for troop in troops {
+                for (index, troop) in troops.enumerated() {
+                    let offset = CGPoint(x: 0, y: (index - troops.count / 2) * 40)
+                    troop.formationOffset = offset
+                    troop.walk()
                     troop.move(along: path)
                 }
             }

@@ -14,6 +14,7 @@ class Troop: SKSpriteNode {
     var isUpgraded: Bool = false
     var type: TroopType
     var attackPower: Int
+    private var healthBar: HealthBar!
 
     // Initializer
     init(texture: SKTexture?, color: UIColor, size: CGSize, type: TroopType) {
@@ -22,6 +23,10 @@ class Troop: SKSpriteNode {
         self.health = 100 + (upgradeLevel * 20)
         self.attackPower = 10 + (upgradeLevel * 5)
         super.init(texture: texture, color: color, size: size)
+
+        healthBar = HealthBar(maxHealth: self.health)
+        healthBar.position = CGPoint(x: 0, y: self.size.height / 2 + 10)
+        addChild(healthBar)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -35,6 +40,7 @@ class Troop: SKSpriteNode {
 
     func takeDamage(_ amount: Int) {
         health -= amount
+        healthBar.update(currentHealth: health)
         if health <= 0 {
             removeFromParent()
         }
@@ -99,7 +105,16 @@ class Weapon: SKSpriteNode {
     }
 
     // Methods
-    func fire() {
-        print("Firing weapon!")
+    func fire(direction: CGVector) {
+        if let gameScene = (self.parent as? Player)?.gameScene {
+            let projectile = Projectile(texture: nil, color: .yellow, size: CGSize(width: 10, height: 5), gameScene: gameScene)
+            projectile.position = self.position
+            projectile.damage = self.damage
+            gameScene.addChild(projectile)
+
+            let moveAction = SKAction.move(by: direction * 1000, duration: 2.0)
+            let removeAction = SKAction.removeFromParent()
+            projectile.run(SKAction.sequence([moveAction, removeAction]))
+        }
     }
 }

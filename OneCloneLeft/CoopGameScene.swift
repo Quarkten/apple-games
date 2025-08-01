@@ -10,23 +10,38 @@ class CoopGameScene: SKScene {
     }
 
     func handleReceivedData(_ data: Data) {
-        // In a real game, you would have a more robust way of identifying players
-        // and synchronizing their state. For now, I'll just assume the data is
-        // the position of the other player.
         do {
-            let position = try JSONDecoder().decode(CGPoint.self, from: data)
-            if let otherPlayer = players.values.first(where: { $0.name != "self" }) {
-                otherPlayer.position = position
-            } else {
-                let newPlayer = Player(texture: nil, color: .red, size: CGSize(width: 50, height: 50))
-                newPlayer.position = position
-                newPlayer.name = "other"
-                players["other"] = newPlayer
-                addChild(newPlayer)
+            let gameState = try JSONDecoder().decode(GameState.self, from: data)
+            for playerState in gameState.players {
+                if let player = players[playerState.id] {
+                    // Update existing player
+                    player.position = playerState.position
+                    player.health = playerState.health
+                    // Update weapon and clones
+                } else {
+                    // Create new player
+                    let newPlayer = Player(texture: nil, color: .red, size: CGSize(width: 50, height: 50))
+                    newPlayer.position = playerState.position
+                    newPlayer.name = playerState.id
+                    players[playerState.id] = newPlayer
+                    addChild(newPlayer)
+                }
             }
         } catch {
-            print("Error decoding position: \(error)")
+            print("Error decoding game state: \(error)")
         }
+    }
+
+    func sendGameState() {
+        var playerStates: [PlayerState] = []
+        for (id, player) in players {
+            // Create PlayerState from player
+            // let playerState = PlayerState(...)
+            // playerStates.append(playerState)
+        }
+        let gameState = GameState(players: playerStates)
+        let data = try! JSONEncoder().encode(gameState)
+        MultiplayerManager.shared.send(data: data)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -34,8 +49,6 @@ class CoopGameScene: SKScene {
         let location = touch.location(in: self)
         if let myPlayer = players["self"] {
             myPlayer.position = location
-            let positionData = try! JSONEncoder().encode(location)
-            MultiplayerManager.shared.send(data: positionData)
         } else {
             let myPlayer = Player(texture: nil, color: .blue, size: CGSize(width: 50, height: 50))
             myPlayer.position = location
@@ -43,5 +56,9 @@ class CoopGameScene: SKScene {
             players["self"] = myPlayer
             addChild(myPlayer)
         }
+    }
+
+    override func update(_ currentTime: TimeInterval) {
+        sendGameState()
     }
 }
