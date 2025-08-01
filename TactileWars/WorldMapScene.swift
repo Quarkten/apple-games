@@ -1,19 +1,33 @@
 import SpriteKit
 
 class WorldMapScene: SKScene {
+    private var aiPlayers: [Player] = []
+
     override func didMove(to view: SKView) {
+        // Create AI players
+        aiPlayers.append(Player(name: "AI 1", color: .red))
+        aiPlayers.append(Player(name: "AI 2", color: .green))
+
         // Create territory nodes
         let territory1 = Territory()
         territory1.path = UIBezierPath(rect: CGRect(x: 100, y: 100, width: 200, height: 150)).cgPath
-        territory1.fillColor = .lightGray
         territory1.name = "territory_1"
+        territory1.conquer(by: aiPlayers[0])
         addChild(territory1)
 
         let territory2 = Territory()
         territory2.path = UIBezierPath(rect: CGRect(x: 400, y: 300, width: 200, height: 150)).cgPath
-        territory2.fillColor = .lightGray
         territory2.name = "territory_2"
+        territory2.conquer(by: aiPlayers[1])
         addChild(territory2)
+
+        let goldNode = ResourceNode(type: .gold, amount: 100)
+        goldNode.position = CGPoint(x: 300, y: 200)
+        addChild(goldNode)
+
+        let woodNode = ResourceNode(type: .wood, amount: 50)
+        woodNode.position = CGPoint(x: 500, y: 400)
+        addChild(woodNode)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -35,6 +49,35 @@ class WorldMapScene: SKScene {
                         print("You lost the battle!")
                     }
                 }
+            }
+        }
+    }
+
+    override func update(_ currentTime: TimeInterval) {
+        // AI attacks
+        if Int.random(in: 0...1000) < 5 {
+            let attackingAI = aiPlayers.randomElement()!
+            let playerTerritories = self.children.compactMap { $0 as? Territory }.filter { $0.owner?.name == "Player 1" }
+            if let targetTerritory = playerTerritories.randomElement() {
+                print("\(attackingAI.name) is attacking your territory \(targetTerritory.name!)!")
+            }
+        }
+
+        // Treasure chests
+        if Int.random(in: 0...1000) < 2 {
+            let resources: [ResourceType: Int] = [.gold: Int.random(in: 50...200)]
+            let treasureChest = TreasureChest(resources: resources)
+            let randomX = CGFloat.random(in: self.frame.minX...self.frame.maxX)
+            let randomY = CGFloat.random(in: self.frame.minY...self.frame.maxY)
+            treasureChest.position = CGPoint(x: randomX, y: randomY)
+            addChild(treasureChest)
+        }
+
+        // Rebellions
+        if Int.random(in: 0...2000) < 1 {
+            if let territory = self.children.compactMap({ $0 as? Territory }).randomElement() {
+                let rebellion = Rebellion(territory: territory, strength: 10)
+                print("A rebellion has started in \(territory.name!)!")
             }
         }
     }

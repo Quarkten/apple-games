@@ -35,6 +35,13 @@ class DefenseStructure: SKSpriteNode {
     func attack(target: Troop) {
         // Implemented by subclasses
     }
+
+    func takeDamage(_ damage: Int) {
+        health -= damage
+        if health <= 0 {
+            self.removeFromParent()
+        }
+    }
 }
 
 // Mine Defense Structure

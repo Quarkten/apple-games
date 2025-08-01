@@ -58,7 +58,17 @@ class BaseScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         for defense in defenses {
             if let closestTroop = findClosestTroop(to: defense.position) {
-                defense.attack(target: closestTroop)
+                let damage = DamageCalculator.calculateDamage(attacker: defense, defender: closestTroop)
+                closestTroop.takeDamage(damage)
+            }
+        }
+
+        for troop in self.children.compactMap({ $0 as? Troop }) {
+            if let closestDefense = findClosestDefense(to: troop.position) {
+                if troop.position.distance(to: closestDefense.position) < troop.attackRange {
+                    let damage = DamageCalculator.calculateDamage(attacker: troop, defender: closestDefense)
+                    closestDefense.takeDamage(damage)
+                }
             }
         }
     }
@@ -75,6 +85,20 @@ class BaseScene: SKScene {
             }
         }
         return closestTroop
+    }
+
+    func findClosestDefense(to position: CGPoint) -> DefenseStructure? {
+        var closestDefense: DefenseStructure?
+        var closestDistance: CGFloat = .greatestFiniteMagnitude
+
+        for defense in defenses {
+            let distance = position.distance(to: defense.position)
+            if distance < closestDistance {
+                closestDistance = distance
+                closestDefense = defense
+            }
+        }
+        return closestDefense
     }
 
     func placeDefense(type: DefenseType, at position: CGPoint) {
