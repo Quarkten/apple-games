@@ -184,6 +184,10 @@ class GameScene: SKScene {
                 newScene.scaleMode = .aspectFill
                 view?.presentScene(newScene)
             }
+        case 24: // 7
+            let newScene = UpgradeScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
         default:
             break
         }

@@ -9,13 +9,17 @@ enum TroopType {
 // Base Troop Class
 class Troop: SKSpriteNode {
     // Properties
-    var health: Int = 100
+    var health: Int
     var isUpgraded: Bool = false
     var type: TroopType
+    var attackPower: Int
 
     // Initializer
     init(texture: SKTexture?, color: UIColor, size: CGSize, type: TroopType) {
         self.type = type
+        let upgradeLevel = UpgradeManager.shared.getTroopUpgradeLevel(for: type)
+        self.health = 100 + (upgradeLevel * 20)
+        self.attackPower = 10 + (upgradeLevel * 5)
         super.init(texture: texture, color: color, size: size)
     }
 
@@ -78,10 +82,14 @@ class TankTroop: Troop {
 // Weapon Class
 class Weapon: SKSpriteNode {
     // Properties
-    var damage: Int = 10
+    var damage: Int
+    var fireRate: CGFloat
 
     // Initializer
     init(texture: SKTexture?, color: UIColor, size: CGSize) {
+        let upgradeLevel = UpgradeManager.shared.getWeaponUpgradeLevel()
+        self.damage = 10 + (upgradeLevel * 5)
+        self.fireRate = 1.0 - (CGFloat(upgradeLevel) * 0.1)
         super.init(texture: texture, color: color, size: size)
     }
 
