@@ -42,7 +42,7 @@ class Zombie: Enemy {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 }
 
@@ -61,6 +61,22 @@ class Mutant: Enemy {
             let removeAction = SKAction.removeFromParent()
             projectile.run(SKAction.sequence([moveAction, removeAction]))
         }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+}
+
+class Giant: Enemy {
+    // Giants are slow, have high health, and do a lot of damage
+    override init(texture: SKTexture?, color: UIColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+        self.health = 500
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
 }
 

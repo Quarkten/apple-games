@@ -9,7 +9,24 @@ class Pistol: Weapon {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+    }
+}
+
+class Flamethrower: Weapon {
+    override init(texture: SKTexture?, color: UIColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+        self.damage = 5
+        self.fireRate = 0.1
+        self.reloadTime = 3.0
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    override func fire() {
+        // Flamethrower creates a continuous stream of fire
     }
 }
 
@@ -22,7 +39,7 @@ class Shotgun: Weapon {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 
     override func fire() {
@@ -39,6 +56,6 @@ class Rifle: Weapon {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 }

@@ -74,6 +74,18 @@ class BaseScene: SKScene {
         pvpButton.name = "pvp_battle"
         pvpButton.position = CGPoint(x: frame.midX, y: frame.midY - 350)
         addChild(pvpButton)
+
+        let allianceButton = SKLabelNode(fontNamed: "Chalkduster")
+        allianceButton.text = "Alliance"
+        allianceButton.name = "alliance"
+        allianceButton.position = CGPoint(x: frame.midX, y: frame.midY - 400)
+        addChild(allianceButton)
+
+        let leaderboardButton = SKLabelNode(fontNamed: "Chalkduster")
+        leaderboardButton.text = "Leaderboard"
+        leaderboardButton.name = "leaderboard"
+        leaderboardButton.position = CGPoint(x: frame.midX, y: frame.midY - 450)
+        addChild(leaderboardButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -136,6 +148,16 @@ class BaseScene: SKScene {
             return
         case "pvp_battle":
             let newScene = PvPScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+            return
+        case "alliance":
+            let newScene = AllianceScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+            return
+        case "leaderboard":
+            let newScene = LeaderboardScene(size: self.size)
             newScene.scaleMode = .aspectFill
             view?.presentScene(newScene)
             return

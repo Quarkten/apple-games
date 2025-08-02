@@ -1,14 +1,13 @@
 import SpriteKit
 
-class Clone: SKSpriteNode {
+class Clone: Troop {
     // Properties
-    var health: Int = 100
-    private var actions: [SKAction] = []
+    weak var gameScene: GameScene?
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize) {
-        super.init(texture: texture, color: color, size: size)
-        // Additional setup
+    init(texture: SKTexture?, color: UIColor, size: CGSize, gameScene: GameScene?) {
+        self.gameScene = gameScene
+        super.init(texture: texture, color: color, size: size, type: .sniper) // Clones are snipers for now
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -16,11 +15,27 @@ class Clone: SKSpriteNode {
     }
 
     // Methods
-    func recordAction(_ action: SKAction) {
-        actions.append(action)
+    func update(dt: TimeInterval) {
+        if let closestEnemy = findClosestEnemy() {
+            let direction = (closestEnemy.position - self.position).normalized()
+            self.zRotation = atan2(direction.y, direction.x)
+            // Fire at the enemy
+        }
     }
 
-    func followRecordedActions() {
-        self.run(SKAction.sequence(actions))
+    private func findClosestEnemy() -> Enemy? {
+        var closestEnemy: Enemy?
+        var closestDistance: CGFloat = .greatestFiniteMagnitude
+
+        for node in gameScene?.children ?? [] {
+            if let enemy = node as? Enemy {
+                let distance = self.position.distance(to: enemy.position)
+                if distance < closestDistance {
+                    closestDistance = distance
+                    closestEnemy = enemy
+                }
+            }
+        }
+        return closestEnemy
     }
 }

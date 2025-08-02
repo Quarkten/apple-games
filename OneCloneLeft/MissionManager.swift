@@ -12,9 +12,13 @@ class MissionManager {
 
     private func loadMissions() {
         // In a real game, you would load this from a file (e.g., a JSON file)
+        let npc = NPC()
         missions = [
             Mission(title: "The Beginning", description: "Clear the area of zombies.", objective: .defeatAllEnemies, enemyWaves: [[Zombie.self, Zombie.self]], reward: ["xp": 100]),
             Mission(title: "Survival", description: "Survive for 2 minutes.", objective: .survive(duration: 120), enemyWaves: [[Mutant.self], [Zombie.self, Mutant.self]], reward: ["xp": 200]),
+            Mission(title: "Escort", description: "Escort the NPC to safety.", objective: .escort(npc: npc), enemyWaves: [[Spitter.self]], reward: ["xp": 300]),
+            Mission(title: "The Charger", description: "Defeat the Charger.", objective: .defeatAllEnemies, enemyWaves: [[Charger.self]], reward: ["xp": 400]),
+            Mission(title: "Boss Fight", description: "Defeat the giant mutant.", objective: .defeatAllEnemies, enemyWaves: [[Mutant.self, Mutant.self, Mutant.self]], reward: ["xp": 500])
         ]
     }
 

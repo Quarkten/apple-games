@@ -33,6 +33,12 @@ class GameScene: SKScene {
         leaderboardButton.name = "leaderboard"
         leaderboardButton.position = CGPoint(x: frame.maxX - 100, y: frame.maxY - 100)
         addChild(leaderboardButton)
+
+        let specialAbilityButton = SKLabelNode(fontNamed: "Chalkduster")
+        specialAbilityButton.text = "Special Ability"
+        specialAbilityButton.name = "special_ability"
+        specialAbilityButton.position = CGPoint(x: frame.midX, y: frame.minY + 100)
+        addChild(specialAbilityButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -49,6 +55,10 @@ class GameScene: SKScene {
                 let newScene = LeaderboardScene(size: self.size)
                 newScene.scaleMode = .aspectFill
                 view?.presentScene(newScene)
+            } else if node.name == "special_ability" {
+                for troop in troops {
+                    troop.useSpecialAbility()
+                }
             }
         }
     }

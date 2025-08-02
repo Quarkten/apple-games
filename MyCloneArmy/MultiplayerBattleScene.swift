@@ -54,12 +54,32 @@ class MultiplayerBattleScene: SKScene {
 
         // Position the armies
         for (armyID, army) in armies {
+            positionArmy(army, isMyArmy: armyID == "myArmy")
+        }
+    }
+
+    func positionArmy(_ army: ArmyManager, isMyArmy: Bool) {
+        let armyX = isMyArmy ? 100 : frame.maxX - 100
+        switch army.formation {
+        case .line:
             for (index, clone) in army.clones.enumerated() {
-                if armyID == "myArmy" {
-                    clone.position = CGPoint(x: 100, y: 100 + index * 50)
-                } else {
-                    clone.position = CGPoint(x: frame.maxX - 100, y: 100 + index * 50)
-                }
+                clone.position = CGPoint(x: armyX, y: 100 + index * 50)
+                addChild(clone)
+            }
+        case .square:
+            let numRows = Int(ceil(sqrt(Double(army.clones.count))))
+            for (index, clone) in army.clones.enumerated() {
+                let row = index / numRows
+                let col = index % numRows
+                clone.position = CGPoint(x: armyX + CGFloat(col * 50), y: 100 + CGFloat(row * 50))
+                addChild(clone)
+            }
+        case .circle:
+            let radius: CGFloat = 100
+            let angleStep = 2 * .pi / CGFloat(army.clones.count)
+            for (index, clone) in army.clones.enumerated() {
+                let angle = angleStep * CGFloat(index)
+                clone.position = CGPoint(x: armyX + radius * cos(angle), y: 200 + radius * sin(angle))
                 addChild(clone)
             }
         }

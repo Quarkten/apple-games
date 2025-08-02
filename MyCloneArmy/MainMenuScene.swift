@@ -21,6 +21,12 @@ class MainMenuScene: SKScene {
         armyButton.name = "my_army"
         armyButton.position = CGPoint(x: frame.midX, y: frame.midY - 100)
         addChild(armyButton)
+
+        let friendsButton = SKLabelNode(fontNamed: "Chalkduster")
+        friendsButton.text = "Friends"
+        friendsButton.name = "friends"
+        friendsButton.position = CGPoint(x: frame.midX, y: frame.midY - 200)
+        addChild(friendsButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -44,6 +50,10 @@ class MainMenuScene: SKScene {
             view?.presentScene(newScene)
         case "my_army":
             let newScene = ArmyManagementScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+        case "friends":
+            let newScene = FriendsScene(size: self.size)
             newScene.scaleMode = .aspectFill
             view?.presentScene(newScene)
         default:

@@ -23,10 +23,16 @@ class MainMenuScene: SKScene {
         optionsButton.position = CGPoint(x: frame.midX, y: frame.midY - 100)
         addChild(optionsButton)
 
+        let challengesButton = SKLabelNode(fontNamed: "Chalkduster")
+        challengesButton.text = "Weekly Challenges"
+        challengesButton.name = "weekly_challenges"
+        challengesButton.position = CGPoint(x: frame.midX, y: frame.midY - 200)
+        addChild(challengesButton)
+
         let quitButton = SKLabelNode(fontNamed: "Chalkduster")
         quitButton.text = "Quit Game"
         quitButton.name = "quit_game"
-        quitButton.position = CGPoint(x: frame.midX, y: frame.midY - 200)
+        quitButton.position = CGPoint(x: frame.midX, y: frame.midY - 300)
         addChild(quitButton)
     }
 
@@ -51,6 +57,10 @@ class MainMenuScene: SKScene {
             view?.presentScene(newScene)
         case "options":
             let newScene = OptionsScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+        case "weekly_challenges":
+            let newScene = WeeklyChallengesScene(size: self.size)
             newScene.scaleMode = .aspectFill
             view?.presentScene(newScene)
         case "quit_game":

@@ -5,6 +5,7 @@ enum ResourceType: String, CaseIterable {
     case cash
     case wood
     case stone
+    case crystal
 }
 
 class ResourceManager {

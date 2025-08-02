@@ -6,6 +6,7 @@ enum BuildingType {
     case academy
     case lumberMill
     case quarry
+    case crystalMine
 }
 
 // Base Building Class
@@ -84,5 +85,12 @@ class LumberMill: Building {
 class Quarry: Building {
     init() {
         super.init(type: .quarry)
+    }
+}
+
+// Crystal Mine Building
+class CrystalMine: Building {
+    init() {
+        super.init(type: .crystalMine)
     }
 }

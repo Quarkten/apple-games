@@ -4,12 +4,14 @@ class UpgradeSystem {
     // Properties
     static let shared = UpgradeSystem()
     var coins: Int = 0
-    var weaponUpgradeLevel: Int = 1
-    var armyUpgradeLevel: Int = 1
-    var healthUpgradeLevel: Int = 1
+    private var upgradeLevels: [UpgradeType: Int] = [:]
 
     // Private init for singleton
-    private init() {}
+    private init() {
+        for upgradeType in upgradeData.keys {
+            upgradeLevels[upgradeType] = 1
+        }
+    }
 
     // Methods
     func addCoins(_ amount: Int) {
@@ -24,33 +26,19 @@ class UpgradeSystem {
         return false
     }
 
-    func upgradeWeapon() {
-        let cost = 50 * weaponUpgradeLevel
-        if spendCoins(cost) {
-            weaponUpgradeLevel += 1
-            print("Weapon upgraded to level \(weaponUpgradeLevel)!")
-        } else {
-            print("Not enough coins to upgrade weapon!")
-        }
+    func getUpgradeLevel(for type: UpgradeType) -> Int {
+        return upgradeLevels[type] ?? 1
     }
 
-    func upgradeArmy() {
-        let cost = 100 * armyUpgradeLevel
-        if spendCoins(cost) {
-            armyUpgradeLevel += 1
-            print("Army upgraded to level \(armyUpgradeLevel)!")
-        } else {
-            print("Not enough coins to upgrade army!")
-        }
-    }
-
-    func upgradeHealth() {
-        let cost = 75 * healthUpgradeLevel
-        if spendCoins(cost) {
-            healthUpgradeLevel += 1
-            print("Health upgraded to level \(healthUpgradeLevel)!")
-        } else {
-            print("Not enough coins to upgrade health!")
+    func upgrade(_ type: UpgradeType) {
+        if let data = upgradeData[type] {
+            let cost = data.baseCost * (upgradeLevels[type] ?? 1)
+            if spendCoins(cost) {
+                upgradeLevels[type, default: 1] += 1
+                print("\(data.name) upgraded to level \(upgradeLevels[type]!)!")
+            } else {
+                print("Not enough coins to upgrade \(data.name)!")
+            }
         }
     }
 }

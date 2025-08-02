@@ -156,12 +156,10 @@ class GameScene: SKScene {
 
     func playerDidDie() {
         guard let player = player else { return }
-        let clone = Clone(texture: nil, color: .green, size: CGSize(width: 50, height: 50))
+        let clone = Clone(texture: nil, color: .green, size: CGSize(width: 50, height: 50), gameScene: self)
         clone.position = player.position
-        clone.recordAction(SKAction.sequence(player.getRecordedActions()))
         clones.append(clone)
         addChild(clone)
-        clone.followRecordedActions()
 
         // Respawn player
         self.player?.removeFromParent()
@@ -178,6 +176,10 @@ class GameScene: SKScene {
 
         let dt = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
+
+        for clone in clones {
+            clone.update(dt: dt)
+        }
 
         hud.updateHealth(player.health)
         hud.updateResources(GameManager.shared.resources)
