@@ -6,10 +6,11 @@ class PlayerClone: SKSpriteNode {
     var weapon: Weapon?
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize) {
+    init() {
         let healthLevel = UpgradeSystem.shared.healthUpgradeLevel
         self.health = 100 + (healthLevel * 20)
-        super.init(texture: texture, color: color, size: size)
+        let texture = SpriteManager.shared.getCloneTexture()
+        super.init(texture: texture, color: .clear, size: texture?.size() ?? .zero)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -25,6 +26,28 @@ class PlayerClone: SKSpriteNode {
     func takeDamage(_ damage: Int) {
         health -= damage
         if health <= 0 {
+            die()
+        }
+    }
+
+    func walk() {
+        if let animation = AnimationManager.shared.getAnimation(named: "walk") {
+            self.run(SKAction.repeatForever(animation))
+        }
+    }
+
+    func attack() {
+        if let animation = AnimationManager.shared.getAnimation(named: "attack") {
+            self.run(animation)
+        }
+    }
+
+    func die() {
+        if let animation = AnimationManager.shared.getAnimation(named: "death") {
+            self.run(animation) {
+                self.removeFromParent()
+            }
+        } else {
             self.removeFromParent()
         }
     }

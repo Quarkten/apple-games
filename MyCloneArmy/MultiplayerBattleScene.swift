@@ -10,6 +10,21 @@ class MultiplayerBattleScene: SKScene {
     }
 
     override func didMove(to view: SKView) {
+        // Add background
+        let background = SKSpriteNode(imageNamed: "background.png")
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        background.zPosition = -1
+        addChild(background)
+
+        // Add obstacles
+        for _ in 0..<5 {
+            let obstacle = SKSpriteNode(color: .darkGray, size: CGSize(width: 50, height: 50))
+            let randomX = CGFloat.random(in: self.frame.minX...self.frame.maxX)
+            let randomY = CGFloat.random(in: self.frame.minY...self.frame.maxY)
+            obstacle.position = CGPoint(x: randomX, y: randomY)
+            addChild(obstacle)
+        }
+
         armies["myArmy"] = ArmyManager.shared
 
         if let mission = mission {
@@ -75,8 +90,52 @@ class MultiplayerBattleScene: SKScene {
     }
 
     override func update(_ currentTime: TimeInterval) {
-        // Combat logic...
+        for (armyID, army) in armies {
+            for clone in army.clones {
+                if let opponentArmy = armies.values.first(where: { $0 !== army }),
+                   let opponentClone = opponentArmy.clones.first {
+
+                    let distance = clone.position.distance(to: opponentClone.position)
+                    if distance < 100 {
+                        clone.attack()
+                        opponentClone.takeDamage(10)
+                    } else {
+                        clone.walk()
+                        let direction = (opponentClone.position - clone.position).normalized()
+                        clone.position += direction * 50 * 0.016
+                    }
+                }
+            }
+        }
+
+        // Remove dead clones
+        for army in armies.values {
+            army.clones.removeAll { $0.health <= 0 }
+        }
 
         sendGameState()
+    }
+}
+
+extension CGPoint {
+    func distance(to point: CGPoint) -> CGFloat {
+        return sqrt(pow(x - point.x, 2) + pow(y - point.y, 2))
+    }
+
+    func normalized() -> CGPoint {
+        let length = distance(to: .zero)
+        return CGPoint(x: x / length, y: y / length)
+    }
+
+    static func - (left: CGPoint, right: CGPoint) -> CGPoint {
+        return CGPoint(x: left.x - right.x, y: left.y - right.y)
+    }
+
+    static func * (point: CGPoint, scalar: CGFloat) -> CGPoint {
+        return CGPoint(x: point.x * scalar, y: point.y * scalar)
+    }
+
+    static func += (left: inout CGPoint, right: CGPoint) {
+        left = CGPoint(x: left.x + right.x, y: left.y + right.y)
     }
 }

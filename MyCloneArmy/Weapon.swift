@@ -6,8 +6,9 @@ class Weapon: SKSpriteNode {
     var damage: Int = 10
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize) {
-        super.init(texture: texture, color: color, size: size)
+    init() {
+        let texture = SpriteManager.shared.getWeaponTexture()
+        super.init(texture: texture, color: .clear, size: texture?.size() ?? .zero)
     }
 
     required init?(coder aDecoder: NSCoder) {
