@@ -53,25 +53,30 @@ class WorldMapScene: SKScene {
                         print("You lost the battle!")
                     }
                 }
+            } else if let resourceNode = node as? ResourceNode {
+                // In a real game, you would add the resources to the player's inventory
+                print("You captured a resource node with \(resourceNode.amount) \(resourceNode.type)!")
+                resourceNode.removeFromParent()
             }
         }
     }
 
-    override func didMove(to view: SKView) {
-        super.didMove(to: view)
-
-        let legend = WorldMapLegend()
-        legend.position = CGPoint(x: frame.maxX - 120, y: frame.maxY - 100)
-        addChild(legend)
-    }
 
     override func update(_ currentTime: TimeInterval) {
         // AI attacks
         if Int.random(in: 0...1000) < 5 {
             let attackingAI = aiPlayers.randomElement()!
-            let playerTerritories = self.children.compactMap { $0 as? Territory }.filter { $0.owner?.name == "Player 1" }
-            if let targetTerritory = playerTerritories.randomElement() {
-                print("\(attackingAI.name) is attacking your territory \(targetTerritory.name!)!")
+            let targetableTerritories = self.children.compactMap { $0 as? Territory }.filter { $0.owner !== attackingAI }
+            if let targetTerritory = targetableTerritories.randomElement() {
+                print("\(attackingAI.name) is attacking \(targetTerritory.owner?.name ?? "a neutral") territory!")
+                let enemyTroops = 5 // For now, the enemy always has 5 troops
+                let aiTroops = 7 // For now, the AI always has 7 troops
+                if aiTroops > enemyTroops {
+                    print("\(attackingAI.name) conquered the territory!")
+                    targetTerritory.conquer(by: attackingAI)
+                } else {
+                    print("\(attackingAI.name) lost the battle!")
+                }
             }
         }
 

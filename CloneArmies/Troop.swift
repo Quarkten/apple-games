@@ -5,6 +5,7 @@ enum TroopType {
     case jetpack
     case tank
     case tankBoss
+    case grenadier
 }
 
 // Base Troop Class
@@ -56,7 +57,17 @@ class SniperTroop: Troop {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+    }
+}
+
+class Grenadier: Troop {
+    init(texture: SKTexture?, color: UIColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size, type: .grenadier)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
 }
 
@@ -69,7 +80,7 @@ class JetpackTroop: Troop {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 }
 
@@ -82,7 +93,7 @@ class TankTroop: Troop {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 }
 
@@ -91,9 +102,11 @@ class Weapon: SKSpriteNode {
     // Properties
     var damage: Int
     var fireRate: CGFloat
+    var type: WeaponType
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize) {
+    init(texture: SKTexture?, color: UIColor, size: CGSize, type: WeaponType) {
+        self.type = type
         let upgradeLevel = UpgradeManager.shared.getWeaponUpgradeLevel()
         self.damage = 10 + (upgradeLevel * 5)
         self.fireRate = 1.0 - (CGFloat(upgradeLevel) * 0.1)
@@ -101,7 +114,7 @@ class Weapon: SKSpriteNode {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 
     // Methods

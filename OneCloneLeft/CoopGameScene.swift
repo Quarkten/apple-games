@@ -20,8 +20,9 @@ class CoopGameScene: SKScene {
     func handleReceivedData(_ data: Data) {
         do {
             let gameState = try JSONDecoder().decode(GameState.self, from: data)
+            let currentPlayers = players
             for playerState in gameState.players {
-                if let player = players[playerState.id] {
+                if let player = currentPlayers[playerState.id] {
                     // Update existing player
                     player.position = playerState.position
                     player.health = playerState.health
@@ -43,9 +44,13 @@ class CoopGameScene: SKScene {
     func sendGameState() {
         var playerStates: [PlayerState] = []
         for (id, player) in players {
-            // Create PlayerState from player
-            // let playerState = PlayerState(...)
-            // playerStates.append(playerState)
+            var cloneStates: [CloneState] = []
+            for clone in player.clones {
+                cloneStates.append(CloneState(position: clone.position, health: clone.health))
+            }
+            let weaponState: WeaponState? = nil // To be implemented
+            let playerState = PlayerState(id: id, position: player.position, health: player.health, weapon: weaponState, clones: cloneStates)
+            playerStates.append(playerState)
         }
         let gameState = GameState(players: playerStates)
         let data = try! JSONEncoder().encode(gameState)

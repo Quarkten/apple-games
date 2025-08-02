@@ -56,13 +56,33 @@ class LevelGenerator {
     }
 
     private func createRoom(x: Int, y: Int, width: Int, height: Int, type: RoomType) {
-        for i in x..<(x + width) {
-            for j in y..<(y + height) {
-                if i >= 0 && i < self.width && j >= 0 && j < self.height {
-                    if i == x || i == x + width - 1 || j == y || j == y + height - 1 {
-                        tiles[i][j] = .wall
-                    } else {
-                        tiles[i][j] = .floor
+        let roomShape = Int.random(in: 0...1) // 0 for rectangle, 1 for circle
+        if roomShape == 0 {
+            // Rectangle
+            for i in x..<(x + width) {
+                for j in y..<(y + height) {
+                    if i >= 0 && i < self.width && j >= 0 && j < self.height {
+                        if i == x || i == x + width - 1 || j == y || j == y + height - 1 {
+                            tiles[i][j] = .wall
+                        } else {
+                            tiles[i][j] = .floor
+                        }
+                    }
+                }
+            }
+        } else {
+            // Circle
+            let centerX = x + width / 2
+            let centerY = y + height / 2
+            let radius = min(width, height) / 2
+            for i in x..<(x + width) {
+                for j in y..<(y + height) {
+                    let dx = i - centerX
+                    let dy = j - centerY
+                    if dx * dx + dy * dy <= radius * radius {
+                        if i >= 0 && i < self.width && j >= 0 && j < self.height {
+                            tiles[i][j] = .floor
+                        }
                     }
                 }
             }
@@ -72,6 +92,15 @@ class LevelGenerator {
             // Add a treasure chest in the center of the room
         } else if type == .boss {
             // Add a boss in the center of the room
+        }
+
+        // Add some obstacles
+        for _ in 0..<5 {
+            let obstacleX = Int.random(in: x+1..<x+width-1)
+            let obstacleY = Int.random(in: y+1..<y+height-1)
+            if obstacleX >= 0 && obstacleX < self.width && obstacleY >= 0 && obstacleY < self.height {
+                tiles[obstacleX][obstacleY] = .wall
+            }
         }
     }
 

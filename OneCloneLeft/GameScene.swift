@@ -46,14 +46,38 @@ class GameScene: SKScene {
 
     func startMission() {
         guard let mission = MissionManager.shared.getCurrentMission() else { return }
-        for wave in mission.enemyWaves {
-            for enemyType in wave {
-                let enemy = enemyType.init(texture: nil, color: .red, size: CGSize(width: 40, height: 40))
-                // Position the enemy
-                // addChild(enemy)
-                // self.enemies.append(enemy)
+
+        switch mission.objective {
+        case .defeatAllEnemies:
+            // Spawn all enemies at once
+            for wave in mission.enemyWaves {
+                for enemyType in wave {
+                    let enemy = enemyType.init(texture: nil, color: .red, size: CGSize(width: 40, height: 40))
+                    // Position the enemy
+                    // addChild(enemy)
+                    // self.enemies.append(enemy)
+                }
             }
-            // Add a delay between waves
+        case .survive(let duration):
+            // Spawn enemies in waves
+            var waveActions: [SKAction] = []
+            for wave in mission.enemyWaves {
+                let spawnWaveAction = SKAction.run {
+                    for enemyType in wave {
+                        let enemy = enemyType.init(texture: nil, color: .red, size: CGSize(width: 40, height: 40))
+                        // Position the enemy
+                        // addChild(enemy)
+                        // self.enemies.append(enemy)
+                    }
+                }
+                waveActions.append(spawnWaveAction)
+                waveActions.append(SKAction.wait(forDuration: 10.0)) // Delay between waves
+            }
+            self.run(SKAction.sequence(waveActions))
+        case .escort(let npc):
+            // Add the NPC to the scene
+            // ...
+            break
         }
     }
 

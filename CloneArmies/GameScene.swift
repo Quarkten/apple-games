@@ -121,6 +121,7 @@ class GameScene: SKScene {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
 
@@ -156,12 +157,10 @@ class GameScene: SKScene {
 
     func playerDidDie() {
         guard let player = player else { return }
-        let clone = Clone(texture: nil, color: .green, size: CGSize(width: 50, height: 50))
+        let clone = Clone(texture: nil, color: .green, size: CGSize(width: 50, height: 50), gameScene: self)
         clone.position = player.position
-        clone.recordAction(SKAction.sequence(player.getRecordedActions()))
         clones.append(clone)
         addChild(clone)
-        clone.followRecordedActions()
 
         // Respawn player
         self.player?.removeFromParent()
@@ -179,7 +178,13 @@ class GameScene: SKScene {
         let dt = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
 
-        hud.updateHealth(player.health)
+        for clone in clones {
+            clone.update(dt: dt)
+        }
+
+        if let player = player {
+            hud.updateHealth(player.health)
+        }
         hud.updateResources(GameManager.shared.resources)
         if let mission = MissionManager.shared.getCurrentMission() {
             hud.updateObjective(mission.title)
@@ -210,11 +215,14 @@ class GameScene: SKScene {
             }
         }
 
-        let defeatedEnemies = enemies.filter { $0.health <= 0 }
-        for enemy in defeatedEnemies {
-            enemyDefeated(at: enemy.position)
+        var defeatedEnemies: [Enemy] = []
+        for enemy in enemies {
+            if enemy.health <= 0 {
+                defeatedEnemies.append(enemy)
+                enemyDefeated(at: enemy.position)
+            }
         }
-        enemies.removeAll { $0.health <= 0 }
+        enemies.removeAll { defeatedEnemies.contains($0) }
 
         if let challenge = challenge {
             switch challenge.objective {
@@ -236,6 +244,9 @@ class GameScene: SKScene {
                     missionComplete()
                 }
             case .survive(let duration):
+                if challengeTimer == 0 {
+                    challengeTimer = duration
+                }
                 challengeTimer -= dt
                 if challengeTimer <= 0 {
                     missionComplete()

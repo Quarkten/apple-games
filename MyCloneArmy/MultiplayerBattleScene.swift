@@ -54,12 +54,32 @@ class MultiplayerBattleScene: SKScene {
 
         // Position the armies
         for (armyID, army) in armies {
+            positionArmy(army, isMyArmy: armyID == "myArmy")
+        }
+    }
+
+    func positionArmy(_ army: ArmyManager, isMyArmy: Bool) {
+        let armyX = isMyArmy ? 100 : frame.maxX - 100
+        switch army.formation {
+        case .line:
             for (index, clone) in army.clones.enumerated() {
-                if armyID == "myArmy" {
-                    clone.position = CGPoint(x: 100, y: 100 + index * 50)
-                } else {
-                    clone.position = CGPoint(x: frame.maxX - 100, y: 100 + index * 50)
-                }
+                clone.position = CGPoint(x: armyX, y: 100 + index * 50)
+                addChild(clone)
+            }
+        case .square:
+            let numRows = Int(ceil(sqrt(Double(army.clones.count))))
+            for (index, clone) in army.clones.enumerated() {
+                let row = index / numRows
+                let col = index % numRows
+                clone.position = CGPoint(x: armyX + CGFloat(col * 50), y: 100 + CGFloat(row * 50))
+                addChild(clone)
+            }
+        case .circle:
+            let radius: CGFloat = 100
+            let angleStep = 2 * .pi / CGFloat(army.clones.count)
+            for (index, clone) in army.clones.enumerated() {
+                let angle = angleStep * CGFloat(index)
+                clone.position = CGPoint(x: armyX + radius * cos(angle), y: 200 + radius * sin(angle))
                 addChild(clone)
             }
         }
@@ -97,9 +117,10 @@ class MultiplayerBattleScene: SKScene {
     }
 
     override func update(_ currentTime: TimeInterval) {
-        for (armyID, army) in armies {
+        let currentArmies = armies
+        for (armyID, army) in currentArmies {
             for clone in army.clones {
-                if let opponentArmy = armies.values.first(where: { $0 !== army }),
+                if let opponentArmy = currentArmies.values.first(where: { $0 !== army }),
                    let opponentClone = findClosestClone(to: clone.position, in: opponentArmy) {
 
                     let distance = clone.position.distance(to: opponentClone.position)
@@ -125,6 +146,8 @@ class MultiplayerBattleScene: SKScene {
     }
 
     func findClosestClone(to position: CGPoint, in army: ArmyManager) -> PlayerClone? {
+        // In a real game, you would use a more optimized data structure, like a quadtree,
+        // to speed up the search for the closest clone.
         guard !army.clones.isEmpty else { return nil }
         var closestClone: PlayerClone?
         var closestDistance: CGFloat = .greatestFiniteMagnitude

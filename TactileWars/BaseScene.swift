@@ -2,6 +2,7 @@ import SpriteKit
 
 class BaseScene: SKScene {
     private var defenses: [DefenseStructure] = []
+    private var troops: [Troop] = []
     private var selectedDefense: DefenseType?
 
     override func didMove(to view: SKView) {
@@ -65,7 +66,7 @@ class BaseScene: SKScene {
             }
         }
 
-        for troop in self.children.compactMap({ $0 as? Troop }) {
+        for troop in troops {
             if let closestDefense = findClosestDefense(to: troop.position) {
                 if closestDefense.parent != nil {
                     if troop.position.distance(to: closestDefense.position) < troop.attackRange {
@@ -75,10 +76,10 @@ class BaseScene: SKScene {
                 }
             }
         }
+        troops.removeAll { $0.parent == nil }
     }
 
     func findClosestTroop(to position: CGPoint) -> Troop? {
-        let troops = self.children.compactMap({ $0 as? Troop })
         guard !troops.isEmpty else { return nil }
 
         var closestTroop: Troop?

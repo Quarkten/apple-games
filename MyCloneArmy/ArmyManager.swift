@@ -4,6 +4,7 @@ class ArmyManager {
     // Properties
     static let shared = ArmyManager()
     var clones: [PlayerClone] = []
+    var formation: Formation = .line
 
     // Private init for singleton
     private init() {}

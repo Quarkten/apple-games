@@ -74,6 +74,18 @@ class BaseScene: SKScene {
         pvpButton.name = "pvp_battle"
         pvpButton.position = CGPoint(x: frame.midX, y: frame.midY - 350)
         addChild(pvpButton)
+
+        let allianceButton = SKLabelNode(fontNamed: "Chalkduster")
+        allianceButton.text = "Alliance"
+        allianceButton.name = "alliance"
+        allianceButton.position = CGPoint(x: frame.midX, y: frame.midY - 400)
+        addChild(allianceButton)
+
+        let leaderboardButton = SKLabelNode(fontNamed: "Chalkduster")
+        leaderboardButton.text = "Leaderboard"
+        leaderboardButton.name = "leaderboard"
+        leaderboardButton.position = CGPoint(x: frame.midX, y: frame.midY - 450)
+        addChild(leaderboardButton)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -139,30 +151,39 @@ class BaseScene: SKScene {
             newScene.scaleMode = .aspectFill
             view?.presentScene(newScene)
             return
+        case "alliance":
+            let newScene = AllianceScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+            return
+        case "leaderboard":
+            let newScene = LeaderboardScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
+            return
         default:
             return
         }
 
         var canAfford = true
         for (resource, amount) in building.cost {
-            if !ResourceManager.shared.spendResource(amount, type: resource) {
+            if ResourceManager.shared.getResourceAmount(for: resource) < amount {
                 canAfford = false
                 break
             }
         }
 
         if canAfford {
+            for (resource, amount) in building.cost {
+                ResourceManager.shared.spendResource(amount, type: resource)
+            }
             base.addBuilding(building)
             building.build()
             print("Built a \(building.type)!")
-            updateResourceLabel()
         } else {
             print("Not enough resources!")
-            // Refund the spent resources
-            for (resource, amount) in building.cost {
-                ResourceManager.shared.addResource(amount, type: resource)
-            }
         }
+        updateResourceLabel()
     }
 
     func updateResourceLabel() {

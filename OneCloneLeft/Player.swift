@@ -1,7 +1,7 @@
 import SpriteKit
 
 class Player: SKSpriteNode {
-    private var clones: [PlayerClone] = []
+    var clones: [PlayerClone] = []
     var weapon: Weapon?
     var unlockedPerks: [Perk] = []
     var health: Int = 100
