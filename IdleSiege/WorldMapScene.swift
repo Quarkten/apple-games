@@ -8,17 +8,20 @@ class WorldMapScene: SKScene {
         addChild(background)
 
         // Create island nodes
-        let island1 = SKShapeNode(circleOfRadius: 50)
+        let island1 = Island(difficulty: 1)
         island1.name = "island_1"
         island1.position = CGPoint(x: frame.midX - 150, y: frame.midY)
-        island1.fillColor = .green
         addChild(island1)
 
-        let island2 = SKShapeNode(circleOfRadius: 50)
+        let island2 = Island(difficulty: 2)
         island2.name = "island_2"
         island2.position = CGPoint(x: frame.midX + 150, y: frame.midY)
-        island2.fillColor = .green
         addChild(island2)
+
+        let island3 = Island(difficulty: 3)
+        island3.name = "island_3"
+        island3.position = CGPoint(x: frame.midX, y: frame.midY + 150)
+        addChild(island3)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -27,19 +30,15 @@ class WorldMapScene: SKScene {
         let nodesAtPoint = nodes(at: location)
 
         for node in nodesAtPoint {
-            if let nodeName = node.name {
-                if nodeName.starts(with: "island_") {
-                    let islandStrength = 100 // For now, all islands have the same strength
-                    let playerStrength = calculatePlayerStrength()
-                    if playerStrength > islandStrength {
-                        print("You won the battle!")
-                        // Mark the island as conquered
-                        if let island = node as? SKShapeNode {
-                            island.fillColor = .blue
-                        }
-                    } else {
-                        print("You lost the battle!")
-                    }
+            if let island = node as? Island {
+                let islandStrength = island.difficulty * 100
+                let playerStrength = calculatePlayerStrength()
+                if playerStrength > islandStrength {
+                    print("You won the battle!")
+                    // Mark the island as conquered
+                    island.fillColor = .blue
+                } else {
+                    print("You lost the battle!")
                 }
             }
         }

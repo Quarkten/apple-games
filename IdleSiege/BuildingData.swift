@@ -13,5 +13,7 @@ let buildingData: [BuildingType: BuildingData] = [
     .academy: BuildingData(type: .academy, name: "Academy", baseCost: [.gold: 150, .wood: 75, .stone: 50], baseResourceGenerationRate: [:]),
     .lumberMill: BuildingData(type: .lumberMill, name: "Lumber Mill", baseCost: [.gold: 50, .stone: 25], baseResourceGenerationRate: [.wood: 1]),
     .quarry: BuildingData(type: .quarry, name: "Quarry", baseCost: [.gold: 50, .wood: 25], baseResourceGenerationRate: [.stone: 1]),
-    .crystalMine: BuildingData(type: .crystalMine, name: "Crystal Mine", baseCost: [.gold: 200, .wood: 100, .stone: 100], baseResourceGenerationRate: [.crystal: 1])
+    .crystalMine: BuildingData(type: .crystalMine, name: "Crystal Mine", baseCost: [.gold: 200, .wood: 100, .stone: 100], baseResourceGenerationRate: [.crystal: 1]),
+    .marketplace: BuildingData(type: .marketplace, name: "Marketplace", baseCost: [.gold: 100, .wood: 50], baseResourceGenerationRate: [:]),
+    .trainingGround: BuildingData(type: .trainingGround, name: "Training Ground", baseCost: [.gold: 150, .wood: 100], baseResourceGenerationRate: [:])
 ]

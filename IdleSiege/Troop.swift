@@ -2,6 +2,8 @@ import Foundation
 
 enum TroopType {
     case swordsman
+    case archer
+    case cavalry
 }
 
 class Troop {
@@ -30,5 +32,17 @@ class Troop {
 class Swordsman: Troop {
     init() {
         super.init(type: .swordsman)
+    }
+}
+
+class Archer: Troop {
+    init() {
+        super.init(type: .archer)
+    }
+}
+
+class Cavalry: Troop {
+    init() {
+        super.init(type: .cavalry)
     }
 }
