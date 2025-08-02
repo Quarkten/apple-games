@@ -15,3 +15,7 @@ This repository contains the source code for five iOS game prototypes created us
 To run any of the games, open the corresponding folder in Xcode and run the project on an iOS simulator or a physical device. For example, to run "Clone Armies", open the `CloneArmies` folder in Xcode.
 
 **Note:** You will need to provide your own sound and music files for the games to have audio. The placeholder files are not included in this repository.
+
+## Running Unit Tests
+
+Each game has a `Tests` folder containing a basic set of unit tests. To run the tests, open the corresponding project in Xcode and press `Cmd+U`.
