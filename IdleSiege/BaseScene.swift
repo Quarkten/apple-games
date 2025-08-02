@@ -7,6 +7,11 @@ class BaseScene: SKScene {
     private var stoneLabel: SKLabelNode!
 
     override func didMove(to view: SKView) {
+        let background = SKSpriteNode(imageNamed: "background.png")
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        background.zPosition = -1
+        addChild(background)
+
         base = Base()
         setupUI()
     }
@@ -148,6 +153,7 @@ class BaseScene: SKScene {
 
         if canAfford {
             base.addBuilding(building)
+            building.build()
             print("Built a \(building.type)!")
             updateResourceLabel()
         } else {

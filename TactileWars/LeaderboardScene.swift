@@ -9,17 +9,9 @@ class LeaderboardScene: SKScene {
         titleLabel.position = CGPoint(x: frame.midX, y: frame.maxY - 100)
         addChild(titleLabel)
 
-        // In a real game, you would fetch the leaderboard data from a server
-        // For now, I'll just display some dummy data
-        let dummyData = [
-            ("Player 1", 1000),
-            ("Player 2", 800),
-            ("Player 3", 600),
-            ("Player 4", 400),
-            ("Player 5", 200)
-        ]
+        let leaderboard = OnlineManager.shared.getLeaderboard()
 
-        for (index, entry) in dummyData.enumerated() {
+        for (index, entry) in leaderboard.enumerated() {
             let entryLabel = SKLabelNode(fontNamed: "Chalkduster")
             entryLabel.text = "\(index + 1). \(entry.0) - \(entry.1)"
             entryLabel.fontSize = 24

@@ -4,8 +4,16 @@ class CoopGameScene: SKScene {
     private var players: [String: Player] = [:]
 
     override func didMove(to view: SKView) {
-        MultiplayerManager.shared.receivedDataHandler = { [weak self] data in
+        MultiplayerManager.shared.receivedDataHandler = { [weak self] data, peerID in
             self?.handleReceivedData(data)
+        }
+        MultiplayerManager.shared.connectionStateChangedHandler = { [weak self] peerID, state in
+            if state == .notConnected {
+                if let player = self?.players.values.first(where: { $0.name == peerID.displayName }) {
+                    player.removeFromParent()
+                    self?.players.removeValue(forKey: peerID.displayName)
+                }
+            }
         }
     }
 

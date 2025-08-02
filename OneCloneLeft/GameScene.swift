@@ -7,6 +7,10 @@ class GameScene: SKScene {
 
     // Scene Lifecycle
     override func didMove(to view: SKView) {
+        let levelGenerator = LevelGenerator(width: 50, height: 30)
+        levelGenerator.generateLevel()
+        renderLevel(tiles: levelGenerator.getTiles())
+
         player = Player(texture: nil, color: .blue, size: CGSize(width: 50, height: 50))
         player.position = CGPoint(x: frame.midX, y: frame.midY)
         addChild(player)
@@ -16,6 +20,41 @@ class GameScene: SKScene {
         cloneButton.name = "clone"
         cloneButton.position = CGPoint(x: frame.minX + 100, y: frame.minY + 100)
         addChild(cloneButton)
+
+        startMission()
+    }
+
+    func renderLevel(tiles: [[TileType]]) {
+        let tileSize = CGSize(width: 32, height: 32)
+        for (x, row) in tiles.enumerated() {
+            for (y, tileType) in row.enumerated() {
+                let tileNode = SKSpriteNode()
+                tileNode.size = tileSize
+                tileNode.position = CGPoint(x: x * Int(tileSize.width), y: y * Int(tileSize.height))
+                switch tileType {
+                case .wall:
+                    tileNode.color = .gray
+                case .floor:
+                    tileNode.color = .lightGray
+                case .door:
+                    tileNode.color = .brown
+                }
+                addChild(tileNode)
+            }
+        }
+    }
+
+    func startMission() {
+        guard let mission = MissionManager.shared.getCurrentMission() else { return }
+        for wave in mission.enemyWaves {
+            for enemyType in wave {
+                let enemy = enemyType.init(texture: nil, color: .red, size: CGSize(width: 40, height: 40))
+                // Position the enemy
+                // addChild(enemy)
+                // self.enemies.append(enemy)
+            }
+            // Add a delay between waves
+        }
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

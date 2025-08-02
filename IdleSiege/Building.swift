@@ -33,6 +33,12 @@ class Building {
     }
 
     // Methods
+    func build() {
+        let scaleUp = SKAction.scale(to: 1.2, duration: 0.2)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.2)
+        self.run(SKAction.sequence([scaleUp, scaleDown]))
+    }
+
     func upgrade() {
         level += 1
         if let data = buildingData[type] {

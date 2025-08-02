@@ -28,6 +28,10 @@ class WorldMapScene: SKScene {
         let woodNode = ResourceNode(type: .wood, amount: 50)
         woodNode.position = CGPoint(x: 500, y: 400)
         addChild(woodNode)
+
+        let legend = WorldMapLegend()
+        legend.position = CGPoint(x: frame.maxX - 120, y: frame.maxY - 100)
+        addChild(legend)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -51,6 +55,14 @@ class WorldMapScene: SKScene {
                 }
             }
         }
+    }
+
+    override func didMove(to view: SKView) {
+        super.didMove(to: view)
+
+        let legend = WorldMapLegend()
+        legend.position = CGPoint(x: frame.maxX - 120, y: frame.maxY - 100)
+        addChild(legend)
     }
 
     override func update(_ currentTime: TimeInterval) {

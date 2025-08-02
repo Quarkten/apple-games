@@ -5,10 +5,15 @@ class PvPScene: SKScene {
     private var playerTroops: [Troop] = []
 
     override func didMove(to view: SKView) {
-        // In a real game, you would get the opponent's base data from the server
-        opponentBase = Base()
-        opponentBase.addBuilding(Barracks())
-        opponentBase.addBuilding(ResourceGenerator())
+        if let opponent = PvPManager.shared.findOpponent() {
+            opponentBase = opponent
+        } else {
+            // Handle case where no opponent is found
+            // For now, just create a dummy opponent
+            opponentBase = Base()
+            opponentBase.addBuilding(Barracks())
+            opponentBase.addBuilding(ResourceGenerator())
+        }
 
         // Get the player's troops
         // playerTroops = getPlayerTroops()

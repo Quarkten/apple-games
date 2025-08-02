@@ -58,26 +58,33 @@ class BaseScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         for defense in defenses {
             if let closestTroop = findClosestTroop(to: defense.position) {
-                let damage = DamageCalculator.calculateDamage(attacker: defense, defender: closestTroop)
-                closestTroop.takeDamage(damage)
+                if closestTroop.parent != nil {
+                    let damage = DamageCalculator.calculateDamage(attacker: defense, defender: closestTroop)
+                    closestTroop.takeDamage(damage)
+                }
             }
         }
 
         for troop in self.children.compactMap({ $0 as? Troop }) {
             if let closestDefense = findClosestDefense(to: troop.position) {
-                if troop.position.distance(to: closestDefense.position) < troop.attackRange {
-                    let damage = DamageCalculator.calculateDamage(attacker: troop, defender: closestDefense)
-                    closestDefense.takeDamage(damage)
+                if closestDefense.parent != nil {
+                    if troop.position.distance(to: closestDefense.position) < troop.attackRange {
+                        let damage = DamageCalculator.calculateDamage(attacker: troop, defender: closestDefense)
+                        closestDefense.takeDamage(damage)
+                    }
                 }
             }
         }
     }
 
     func findClosestTroop(to position: CGPoint) -> Troop? {
+        let troops = self.children.compactMap({ $0 as? Troop })
+        guard !troops.isEmpty else { return nil }
+
         var closestTroop: Troop?
         var closestDistance: CGFloat = .greatestFiniteMagnitude
 
-        for troop in self.children.compactMap({ $0 as? Troop }) {
+        for troop in troops {
             let distance = position.distance(to: troop.position)
             if distance < closestDistance {
                 closestDistance = distance
@@ -88,6 +95,8 @@ class BaseScene: SKScene {
     }
 
     func findClosestDefense(to position: CGPoint) -> DefenseStructure? {
+        guard !defenses.isEmpty else { return nil }
+
         var closestDefense: DefenseStructure?
         var closestDistance: CGFloat = .greatestFiniteMagnitude
 

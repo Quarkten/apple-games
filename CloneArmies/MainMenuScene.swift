@@ -50,8 +50,9 @@ class MainMenuScene: SKScene {
             newScene.scaleMode = .aspectFill
             view?.presentScene(newScene)
         case "options":
-            // In a real game, you would transition to an options screen
-            print("Options button pressed")
+            let newScene = OptionsScene(size: self.size)
+            newScene.scaleMode = .aspectFill
+            view?.presentScene(newScene)
         case "quit_game":
             // This will only work on a real device or in the simulator
             exit(0)

@@ -8,8 +8,14 @@ class PvPManager {
     private init() {}
 
     // Methods
-    func findOpponent() {
-        // Logic to find a PvP opponent
+    func findOpponent() -> Base? {
+        // In a real game, this would fetch an opponent from a server
+        // For now, just create a dummy opponent
+        let opponent = Base()
+        opponent.addBuilding(Barracks())
+        opponent.addBuilding(ResourceGenerator())
+        opponent.addTroop(Troop(type: .swordsman))
+        return opponent
     }
 
     func startBattle(with opponent: Base) {
