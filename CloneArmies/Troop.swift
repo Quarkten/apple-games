@@ -16,6 +16,8 @@ class Troop: SKSpriteNode {
     var type: TroopType
     var attackPower: Int
     private var healthBar: HealthBar!
+    var isInCover: Bool = false
+    var isSuppressed: Bool = false
 
     // Initializer
     init(texture: SKTexture?, color: UIColor, size: CGSize, type: TroopType) {
@@ -40,10 +42,46 @@ class Troop: SKSpriteNode {
     }
 
     func takeDamage(_ amount: Int) {
-        health -= amount
+        if isInCover {
+            health -= amount / 2 // Take half damage when in cover
+        } else {
+            health -= amount
+        }
         healthBar.update(currentHealth: health)
         if health <= 0 {
             removeFromParent()
+        }
+    }
+
+    func applySuppression() {
+        isSuppressed = true
+        let waitAction = SKAction.wait(forDuration: 5.0)
+        let removeSuppressionAction = SKAction.run {
+            self.isSuppressed = false
+        }
+        self.run(SKAction.sequence([waitAction, removeSuppressionAction]))
+    }
+
+    func takeCover(in scene: SKScene) {
+        var closestCover: CoverObject?
+        var closestDistance: CGFloat = .greatestFiniteMagnitude
+
+        for node in scene.children {
+            if let cover = node as? CoverObject, !cover.isOccupied {
+                let distance = self.position.distance(to: cover.position)
+                if distance < closestDistance {
+                    closestDistance = distance
+                    closestCover = cover
+                }
+            }
+        }
+
+        if let cover = closestCover {
+            let moveAction = SKAction.move(to: cover.position, duration: 1.0)
+            self.run(moveAction) {
+                self.isInCover = true
+                cover.isOccupied = true
+            }
         }
     }
 }
@@ -103,6 +141,7 @@ class Weapon: SKSpriteNode {
     var damage: Int
     var fireRate: CGFloat
     var type: WeaponType
+    var suppressionPower: Int
 
     // Initializer
     init(texture: SKTexture?, color: UIColor, size: CGSize, type: WeaponType) {
@@ -110,6 +149,7 @@ class Weapon: SKSpriteNode {
         let upgradeLevel = UpgradeManager.shared.getWeaponUpgradeLevel()
         self.damage = 10 + (upgradeLevel * 5)
         self.fireRate = 1.0 - (CGFloat(upgradeLevel) * 0.1)
+        self.suppressionPower = 5 + upgradeLevel
         super.init(texture: texture, color: color, size: size)
     }
 
@@ -128,6 +168,15 @@ class Weapon: SKSpriteNode {
             let moveAction = SKAction.move(by: direction * 1000, duration: 2.0)
             let removeAction = SKAction.removeFromParent()
             projectile.run(SKAction.sequence([moveAction, removeAction]))
+
+            // Apply suppression
+            for node in gameScene.children {
+                if let enemy = node as? Enemy {
+                    if projectile.intersects(enemy) {
+                        enemy.applySuppression()
+                    }
+                }
+            }
         }
     }
 }
