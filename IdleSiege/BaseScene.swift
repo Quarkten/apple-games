@@ -167,24 +167,23 @@ class BaseScene: SKScene {
 
         var canAfford = true
         for (resource, amount) in building.cost {
-            if !ResourceManager.shared.spendResource(amount, type: resource) {
+            if ResourceManager.shared.getResourceAmount(for: resource) < amount {
                 canAfford = false
                 break
             }
         }
 
         if canAfford {
+            for (resource, amount) in building.cost {
+                ResourceManager.shared.spendResource(amount, type: resource)
+            }
             base.addBuilding(building)
             building.build()
             print("Built a \(building.type)!")
-            updateResourceLabel()
         } else {
             print("Not enough resources!")
-            // Refund the spent resources
-            for (resource, amount) in building.cost {
-                ResourceManager.shared.addResource(amount, type: resource)
-            }
         }
+        updateResourceLabel()
     }
 
     func updateResourceLabel() {

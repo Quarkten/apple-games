@@ -117,9 +117,10 @@ class MultiplayerBattleScene: SKScene {
     }
 
     override func update(_ currentTime: TimeInterval) {
-        for (armyID, army) in armies {
+        let currentArmies = armies
+        for (armyID, army) in currentArmies {
             for clone in army.clones {
-                if let opponentArmy = armies.values.first(where: { $0 !== army }),
+                if let opponentArmy = currentArmies.values.first(where: { $0 !== army }),
                    let opponentClone = findClosestClone(to: clone.position, in: opponentArmy) {
 
                     let distance = clone.position.distance(to: opponentClone.position)
@@ -145,6 +146,8 @@ class MultiplayerBattleScene: SKScene {
     }
 
     func findClosestClone(to position: CGPoint, in army: ArmyManager) -> PlayerClone? {
+        // In a real game, you would use a more optimized data structure, like a quadtree,
+        // to speed up the search for the closest clone.
         guard !army.clones.isEmpty else { return nil }
         var closestClone: PlayerClone?
         var closestDistance: CGFloat = .greatestFiniteMagnitude
