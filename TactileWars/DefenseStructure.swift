@@ -16,8 +16,9 @@ class DefenseStructure: SKSpriteNode {
     private var healthBar: HealthBar!
 
     // Initializer
-    init(texture: SKTexture?, color: UIColor, size: CGSize, type: DefenseType) {
+    init(type: DefenseType) {
         self.type = type
+        let texture = SpriteManager.shared.getTexture(for: type)
         if let data = defenseData[type] {
             self.cost = data.cost
             self.health = data.health
@@ -27,7 +28,7 @@ class DefenseStructure: SKSpriteNode {
             self.damage = 0
             self.health = 0
         }
-        super.init(texture: texture, color: color, size: size)
+        super.init(texture: texture, color: .clear, size: texture?.size() ?? .zero)
 
         healthBar = HealthBar(maxHealth: self.health)
         healthBar.position = CGPoint(x: 0, y: self.size.height / 2 + 10)
@@ -35,7 +36,7 @@ class DefenseStructure: SKSpriteNode {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 
     func attack(target: Troop) {
@@ -58,7 +59,7 @@ class Mine: DefenseStructure {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 
     override func attack(target: Troop) {
@@ -77,7 +78,7 @@ class Tank: DefenseStructure {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 
     override func attack(target: Troop) {
@@ -100,10 +101,13 @@ class Cannon: DefenseStructure {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
     }
 
     override func attack(target: Troop) {
+        if let animation = AnimationManager.shared.getAnimation(for: .cannon, named: "attack") {
+            self.run(animation)
+        }
         // Fire a projectile with an area of effect
         let projectile = SKShapeNode(circleOfRadius: 20)
         projectile.position = target.position

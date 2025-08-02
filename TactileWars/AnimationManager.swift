@@ -4,6 +4,7 @@ class AnimationManager {
     static let shared = AnimationManager()
 
     private var troopAnimations: [TroopType: [String: [SKTexture]]] = [:]
+    private var defenseAnimations: [DefenseType: [String: [SKTexture]]] = [:]
 
     private init() {
         // In a real game, you would load these textures from a texture atlas
@@ -13,10 +14,18 @@ class AnimationManager {
             "attack": [SKTexture(imageNamed: "infantry_attack_1.png"), SKTexture(imageNamed: "infantry_attack_2.png")],
             "death": [SKTexture(imageNamed: "infantry_death_1.png"), SKTexture(imageNamed: "infantry_death_2.png")]
         ]
+        defenseAnimations[.cannon] = [
+            "attack": [SKTexture(imageNamed: "cannon_attack_1.png"), SKTexture(imageNamed: "cannon_attack_2.png")]
+        ]
     }
 
     func getAnimation(for troopType: TroopType, named: String) -> SKAction? {
         guard let textures = troopAnimations[troopType]?[named] else { return nil }
+        return SKAction.animate(with: textures, timePerFrame: 0.1)
+    }
+
+    func getAnimation(for defenseType: DefenseType, named: String) -> SKAction? {
+        guard let textures = defenseAnimations[defenseType]?[named] else { return nil }
         return SKAction.animate(with: textures, timePerFrame: 0.1)
     }
 }
