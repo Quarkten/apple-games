@@ -9,6 +9,8 @@ class MultiplayerManager: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiser
     var browser: MCNearbyServiceBrowser!
     var advertiser: MCNearbyServiceAdvertiser!
     var maxPlayers: Int = 4 // Default to 4 players for co-op
+    var connectionStateChangedHandler: ((MCPeerID, MCSessionState) -> Void)?
+    var receivedDataHandler: ((Data, MCPeerID) -> Void)?
 
     // Private init for singleton
     private override init() {
@@ -32,8 +34,24 @@ class MultiplayerManager: NSObject, MCSessionDelegate, MCNearbyServiceAdvertiser
     }
 
     // MCSessionDelegate methods
-    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {}
-    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {}
+    func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
+        connectionStateChangedHandler?(peerID, state)
+        switch state {
+        case .connected:
+            print("Connected to \(peerID.displayName)")
+        case .connecting:
+            print("Connecting to \(peerID.displayName)")
+        case .notConnected:
+            print("Disconnected from \(peerID.displayName)")
+        @unknown default:
+            fatalError("Unknown state received: \(state)")
+        }
+    }
+
+    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        receivedDataHandler?(data, peerID)
+    }
+
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {}
     func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {}
     func session(_ session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, at localURL: URL?, withError error: Error?) {}

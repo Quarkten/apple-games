@@ -43,7 +43,10 @@ class Troop: SKSpriteNode {
         let endPoint = path.boundingBox.origin + path.boundingBox.size
         let formationPoint = endPoint + formationOffset
         let moveToAction = SKAction.move(to: formationPoint, duration: 0.5)
-        self.run(SKAction.sequence([followPath, moveToAction]))
+        let stopAnimation = SKAction.run {
+            self.removeAllActions()
+        }
+        self.run(SKAction.sequence([followPath, moveToAction, stopAnimation]))
     }
 
     func takeDamage(_ damage: Int) {
@@ -66,6 +69,14 @@ class Troop: SKSpriteNode {
     }
 
     func die() {
+        if let deathEffect = SKEmitterNode(fileNamed: "Death") {
+            deathEffect.position = self.position
+            self.parent?.addChild(deathEffect)
+            let waitAction = SKAction.wait(forDuration: 1.0)
+            let removeAction = SKAction.removeFromParent()
+            deathEffect.run(SKAction.sequence([waitAction, removeAction]))
+        }
+
         if let animation = AnimationManager.shared.getAnimation(for: type, named: "death") {
             self.run(animation) {
                 self.removeFromParent()

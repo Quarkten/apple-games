@@ -25,7 +25,7 @@ class UpgradeSystem {
     }
 
     func upgradeWeapon() {
-        let cost = 100 * weaponUpgradeLevel
+        let cost = 50 * weaponUpgradeLevel
         if spendCoins(cost) {
             weaponUpgradeLevel += 1
             print("Weapon upgraded to level \(weaponUpgradeLevel)!")
@@ -35,7 +35,7 @@ class UpgradeSystem {
     }
 
     func upgradeArmy() {
-        let cost = 200 * armyUpgradeLevel
+        let cost = 100 * armyUpgradeLevel
         if spendCoins(cost) {
             armyUpgradeLevel += 1
             print("Army upgraded to level \(armyUpgradeLevel)!")
@@ -45,7 +45,7 @@ class UpgradeSystem {
     }
 
     func upgradeHealth() {
-        let cost = 150 * healthUpgradeLevel
+        let cost = 75 * healthUpgradeLevel
         if spendCoins(cost) {
             healthUpgradeLevel += 1
             print("Health upgraded to level \(healthUpgradeLevel)!")

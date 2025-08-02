@@ -40,6 +40,7 @@ class Player: SKSpriteNode {
 
     func takeDamage(_ amount: Int) {
         health -= amount
+        gameScene?.screenShake()
         if health <= 0 {
             die()
         }

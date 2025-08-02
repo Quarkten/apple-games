@@ -6,6 +6,12 @@ enum TileType {
     case door
 }
 
+enum RoomType {
+    case standard
+    case treasure
+    case boss
+}
+
 class LevelGenerator {
     private var tiles: [[TileType]] = []
     private let width: Int
@@ -22,9 +28,9 @@ class LevelGenerator {
         let room2Center = CGPoint(x: 24, y: 21)
         let room3Center = CGPoint(x: 41, y: 13)
 
-        createRoom(x: 5, y: 5, width: 10, height: 8)
-        createRoom(x: 20, y: 15, width: 8, height: 12)
-        createRoom(x: 35, y: 10, width: 12, height: 6)
+        createRoom(x: 5, y: 5, width: 10, height: 8, type: .standard)
+        createRoom(x: 20, y: 15, width: 8, height: 12, type: .treasure)
+        createRoom(x: 35, y: 10, width: 12, height: 6, type: .boss)
 
         createCorridor(from: room1Center, to: room2Center)
         createCorridor(from: room2Center, to: room3Center)
@@ -49,13 +55,23 @@ class LevelGenerator {
         }
     }
 
-    private func createRoom(x: Int, y: Int, width: Int, height: Int) {
+    private func createRoom(x: Int, y: Int, width: Int, height: Int, type: RoomType) {
         for i in x..<(x + width) {
             for j in y..<(y + height) {
                 if i >= 0 && i < self.width && j >= 0 && j < self.height {
-                    tiles[i][j] = .floor
+                    if i == x || i == x + width - 1 || j == y || j == y + height - 1 {
+                        tiles[i][j] = .wall
+                    } else {
+                        tiles[i][j] = .floor
+                    }
                 }
             }
+        }
+
+        if type == .treasure {
+            // Add a treasure chest in the center of the room
+        } else if type == .boss {
+            // Add a boss in the center of the room
         }
     }
 

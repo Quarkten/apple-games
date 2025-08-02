@@ -2,6 +2,11 @@ import SpriteKit
 
 class WorldMapScene: SKScene {
     override func didMove(to view: SKView) {
+        let background = SKSpriteNode(imageNamed: "world_map_background.png")
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        background.zPosition = -1
+        addChild(background)
+
         // Create island nodes
         let island1 = SKShapeNode(circleOfRadius: 50)
         island1.name = "island_1"

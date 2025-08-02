@@ -10,6 +10,7 @@ class MultiplayerBattleScene: SKScene {
     }
 
     override func didMove(to view: SKView) {
+        armies.removeAll()
         // Add background
         let background = SKSpriteNode(imageNamed: "background.png")
         background.position = CGPoint(x: frame.midX, y: frame.midY)
@@ -42,6 +43,12 @@ class MultiplayerBattleScene: SKScene {
             armies["opponentArmy"] = ArmyManager()
             MultiplayerManager.shared.receivedDataHandler = { [weak self] data in
                 self?.handleReceivedData(data)
+            }
+            MultiplayerManager.shared.connectionStateChangedHandler = { [weak self] peerID, state in
+                if state == .notConnected {
+                    // In a real game, you would need a more robust way to identify the player's army
+                    self?.armies.removeValue(forKey: "opponentArmy")
+                }
             }
         }
 
@@ -93,12 +100,13 @@ class MultiplayerBattleScene: SKScene {
         for (armyID, army) in armies {
             for clone in army.clones {
                 if let opponentArmy = armies.values.first(where: { $0 !== army }),
-                   let opponentClone = opponentArmy.clones.first {
+                   let opponentClone = findClosestClone(to: clone.position, in: opponentArmy) {
 
                     let distance = clone.position.distance(to: opponentClone.position)
                     if distance < 100 {
                         clone.attack()
-                        opponentClone.takeDamage(10)
+                        let damage = Int.random(in: 5...15)
+                        opponentClone.takeDamage(damage)
                     } else {
                         clone.walk()
                         let direction = (opponentClone.position - clone.position).normalized()
@@ -114,6 +122,20 @@ class MultiplayerBattleScene: SKScene {
         }
 
         sendGameState()
+    }
+
+    func findClosestClone(to position: CGPoint, in army: ArmyManager) -> PlayerClone? {
+        guard !army.clones.isEmpty else { return nil }
+        var closestClone: PlayerClone?
+        var closestDistance: CGFloat = .greatestFiniteMagnitude
+        for clone in army.clones {
+            let distance = position.distance(to: clone.position)
+            if distance < closestDistance {
+                closestDistance = distance
+                closestClone = clone
+            }
+        }
+        return closestClone
     }
 }
 

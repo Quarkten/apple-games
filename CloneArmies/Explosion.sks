@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SKEmitterNode>
+    <customClass></customClass>
+    <acceleration y="0" x="0"/>
+    <particleBirthRate value="500"/>
+    <particleColorBlendFactor value="0"/>
+    <particleColorBlueRange value="0"/>
+    <particleColorGreenRange value="0"/>
+    <particleColorRedRange value="0"/>
+    <particleColorBlueSpeed value="0"/>
+    <particleColorGreenSpeed value="0"/>
+    <particleColorRedSpeed value="0"/>
+    <particleColorSequence>
+        <dictionary>
+            <string>color</string>
+            <string>1 0.8 0.4 1</string>
+            <string>time</string>
+            <string>0</string>
+        </dictionary>
+        <dictionary>
+            <string>color</string>
+            <string>1 0.4 0.2 1</string>
+            <string>time</string>
+            <string>0.5</string>
+        </dictionary>
+        <dictionary>
+            <string>color</string>
+            <string>0.2 0.2 0.2 0</string>
+            <string>time</string>
+            <string>1</string>
+        </dictionary>
+    </particleColorSequence>
+    <particleLifetime value="0.5"/>
+    <particleLifetimeRange value="0.2"/>
+    <particlePositionRange y="0" x="0"/>
+    <particleRotationRange value="0"/>
+    <particleRotationSpeed value="0"/>
+    <particleScale value="1"/>
+    <particleScaleRange value="0.5"/>
+    <particleScaleSpeed value="-1"/>
+    <particleSize y="20" x="20"/>
+    <particleSpeed value="200"/>
+    <particleSpeedRange value="100"/>
+    <position y="0" x="0"/>
+    <particleBlendMode value="0"/>
+    <particleTexture>
+        <string></string>
+    </particleTexture>
+    <emissionAngle value="0"/>
+    <emissionAngleRange value="360"/>
+    <particleAlpha value="1"/>
+    <particleAlphaRange value="0"/>
+    <particleAlphaSpeed value="-2"/>
+</SKEmitterNode>

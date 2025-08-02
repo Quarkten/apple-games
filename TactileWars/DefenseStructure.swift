@@ -9,10 +9,11 @@ enum DefenseType {
 // Base Defense Structure Class
 class DefenseStructure: SKSpriteNode {
     // Properties
-    var health: Int = 200
+    var health: Int
     var type: DefenseType
     var cost: Int
     var damage: Int
+    private var healthBar: HealthBar!
 
     // Initializer
     init(texture: SKTexture?, color: UIColor, size: CGSize, type: DefenseType) {
@@ -24,8 +25,13 @@ class DefenseStructure: SKSpriteNode {
         } else {
             self.cost = 0
             self.damage = 0
+            self.health = 0
         }
         super.init(texture: texture, color: color, size: size)
+
+        healthBar = HealthBar(maxHealth: self.health)
+        healthBar.position = CGPoint(x: 0, y: self.size.height / 2 + 10)
+        addChild(healthBar)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -38,6 +44,7 @@ class DefenseStructure: SKSpriteNode {
 
     func takeDamage(_ damage: Int) {
         health -= damage
+        healthBar.update(currentHealth: health)
         if health <= 0 {
             self.removeFromParent()
         }

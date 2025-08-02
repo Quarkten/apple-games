@@ -16,6 +16,7 @@ class GameScene: SKScene {
     private var challengeEnemyCount: Int = 0
     private var hud: HUD!
     private var attackModeIndicator: SKShapeNode!
+    private var pauseMenu: PauseMenu!
 
     // MARK: - Scene Lifecycle
 
@@ -34,6 +35,17 @@ class GameScene: SKScene {
         attackModeIndicator.isHidden = true
         addChild(attackModeIndicator)
 
+        pauseMenu = PauseMenu()
+        pauseMenu.position = CGPoint(x: frame.midX, y: frame.midY)
+        pauseMenu.isHidden = true
+        addChild(pauseMenu)
+
+        let pauseButton = SKLabelNode(fontNamed: "Chalkduster")
+        pauseButton.text = "Pause"
+        pauseButton.name = "pause"
+        pauseButton.position = CGPoint(x: frame.maxX - 100, y: frame.maxY - 50)
+        addChild(pauseButton)
+
         startMission()
     }
 
@@ -43,6 +55,11 @@ class GameScene: SKScene {
     }
 
     func startMission() {
+        enemies.forEach { $0.removeFromParent() }
+        bosses.forEach { $0.removeFromParent() }
+        enemies.removeAll()
+        bosses.removeAll()
+
         guard let mission = MissionManager.shared.getCurrentMission() else {
             // No more missions
             return
@@ -56,6 +73,7 @@ class GameScene: SKScene {
     func startChallenge() {
         guard let challenge = challenge else { return }
 
+        challengeTimer = 0
         switch challenge.objective {
         case .survive(let duration):
             challengeTimer = duration
@@ -77,8 +95,29 @@ class GameScene: SKScene {
     // MARK: - User Input
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isAttacking.toggle()
-        attackModeIndicator.isHidden = !isAttacking
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        let nodesAtPoint = nodes(at: location)
+
+        for node in nodesAtPoint {
+            if let nodeName = node.name {
+                switch nodeName {
+                case "pause":
+                    self.isPaused = true
+                    pauseMenu.isHidden = false
+                case "resume":
+                    self.isPaused = false
+                    pauseMenu.isHidden = true
+                case "quit_to_main_menu":
+                    let newScene = MainMenuScene(size: self.size)
+                    newScene.scaleMode = .aspectFill
+                    view?.presentScene(newScene)
+                default:
+                    isAttacking.toggle()
+                    attackModeIndicator.isHidden = !isAttacking
+                }
+            }
+        }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -91,6 +130,11 @@ class GameScene: SKScene {
         } else {
             player.move(to: location)
         }
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isAttacking = false
+        attackModeIndicator.isHidden = true
     }
 
     // MARK: - Game Logic
@@ -167,8 +211,8 @@ class GameScene: SKScene {
         }
 
         let defeatedEnemies = enemies.filter { $0.health <= 0 }
-        for _ in defeatedEnemies {
-            enemyDefeated()
+        for enemy in defeatedEnemies {
+            enemyDefeated(at: enemy.position)
         }
         enemies.removeAll { $0.health <= 0 }
 
@@ -210,8 +254,15 @@ class GameScene: SKScene {
         // Go back to main menu or show a victory screen
     }
 
-    func enemyDefeated() {
+    func enemyDefeated(at position: CGPoint) {
         SoundManager.shared.playSound(named: "explosion")
+        if let explosion = SKEmitterNode(fileNamed: "Explosion") {
+            explosion.position = position
+            addChild(explosion)
+            let waitAction = SKAction.wait(forDuration: 1.0)
+            let removeAction = SKAction.removeFromParent()
+            explosion.run(SKAction.sequence([waitAction, removeAction]))
+        }
     }
 
     func missionComplete() {
@@ -223,6 +274,11 @@ class GameScene: SKScene {
         // You might want to clear the scene and show a mission complete screen
         // before starting the next mission.
         startMission()
+    }
+
+    func screenShake() {
+        let shake = SKAction.shake(duration: 0.5, amplitudeX: 10, amplitudeY: 10)
+        self.run(shake)
     }
 
     func spawnEnemy(type: TroopType) {

@@ -6,7 +6,7 @@ class PerkSelectionScene: SKScene {
 
     override func didMove(to view: SKView) {
         // In a real game, you would get the available perks from a manager
-        availablePerks = [
+        let allPerks = [
             Perk(name: "Extra Health", description: "Increases health by 20%", effect: { player in
                 player.health += Int(Double(player.health) * 0.2)
             }),
@@ -23,6 +23,8 @@ class PerkSelectionScene: SKScene {
                 // player.maxClones += 1
             })
         ]
+
+        availablePerks = Array(allPerks.shuffled().prefix(3))
 
         // Create perk selection buttons
         for (index, perk) in availablePerks.enumerated() {

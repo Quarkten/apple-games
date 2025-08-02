@@ -12,12 +12,18 @@ class Player: SKSpriteNode {
     }
 
     func clone() {
-        let clone = PlayerClone(texture: self.texture, color: self.color, size: self.size)
+        let clone = PlayerClone(texture: self.texture, color: self.color, size: self.size, owner: self)
         clone.position = self.position
         if let weapon = self.weapon {
             clone.weapon = weapon.clone()
         }
         self.parent?.addChild(clone)
         clones.append(clone)
+    }
+
+    func removeClone(_ clone: PlayerClone) {
+        if let index = clones.firstIndex(of: clone) {
+            clones.remove(at: index)
+        }
     }
 }
