@@ -2,14 +2,32 @@ import SpriteKit
 
 class MultiplayerBattleScene: SKScene {
     private var armies: [String: ArmyManager] = [:]
+    private var mission: Mission?
+
+    convenience init(mission: Mission) {
+        self.init(size: CGSize(width: 1024, height: 768)) // Or your desired size
+        self.mission = mission
+    }
 
     override func didMove(to view: SKView) {
         armies["myArmy"] = ArmyManager.shared
-        // In a real game, you would get the opponent's army data from the server
-        armies["opponentArmy"] = ArmyManager()
 
-        MultiplayerManager.shared.receivedDataHandler = { [weak self] data in
-            self?.handleReceivedData(data)
+        if let mission = mission {
+            // Setup AI opponent
+            let opponentArmy = ArmyManager()
+            for cloneState in mission.aiOpponent.army.clones {
+                let clone = PlayerClone(texture: nil, color: .red, size: CGSize(width: 50, height: 50))
+                clone.position = cloneState.position
+                clone.health = cloneState.health
+                opponentArmy.addClone(clone)
+            }
+            armies["opponentArmy"] = opponentArmy
+        } else {
+            // Setup multiplayer opponent
+            armies["opponentArmy"] = ArmyManager()
+            MultiplayerManager.shared.receivedDataHandler = { [weak self] data in
+                self?.handleReceivedData(data)
+            }
         }
 
         // Position the armies
