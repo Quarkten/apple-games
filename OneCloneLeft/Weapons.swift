@@ -13,6 +13,40 @@ class Pistol: Weapon {
     }
 }
 
+class RocketLauncher: Weapon {
+    override init(texture: SKTexture?, color: UIColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+        self.damage = 100
+        self.fireRate = 2.0
+        self.reloadTime = 5.0
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    override func fire() {
+        // Rockets create an explosion on impact
+    }
+}
+
+class LaserRifle: Weapon {
+    override init(texture: SKTexture?, color: UIColor, size: CGSize) {
+        super.init(texture: texture, color: color, size: size)
+        self.damage = 15
+        self.fireRate = 0.1
+        self.reloadTime = 2.0
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    override func fire() {
+        // Laser rifle fires a continuous beam
+    }
+}
+
 class Flamethrower: Weapon {
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)

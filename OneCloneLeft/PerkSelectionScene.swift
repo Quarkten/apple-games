@@ -21,6 +21,12 @@ class PerkSelectionScene: SKScene {
             }),
             Perk(name: "Extra Clone", description: "Allows you to have one more clone", effect: { player in
                 // player.maxClones += 1
+            }),
+            Perk(name: "Increased Speed", description: "Increases movement speed by 15%", effect: { player in
+                // player.movementSpeed *= 1.15
+            }),
+            Perk(name: "Loot Goblin", description: "Increases the chance to find more loot", effect: { player in
+                // player.lootChance *= 1.25
             })
         ]
 
