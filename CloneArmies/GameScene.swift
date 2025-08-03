@@ -46,6 +46,19 @@ class GameScene: SKScene {
         pauseButton.position = CGPoint(x: frame.maxX - 100, y: frame.maxY - 50)
         addChild(pauseButton)
 
+        let takeCoverButton = SKLabelNode(fontNamed: "Chalkduster")
+        takeCoverButton.text = "Take Cover"
+        takeCoverButton.name = "take_cover"
+        takeCoverButton.position = CGPoint(x: frame.midX, y: frame.minY + 100)
+        addChild(takeCoverButton)
+
+        // Add cover objects
+        for i in 0..<3 {
+            let cover = CoverObject(color: .brown, size: CGSize(width: 50, height: 100))
+            cover.position = CGPoint(x: 200 + i * 150, y: 300)
+            addChild(cover)
+        }
+
         startMission()
     }
 
@@ -112,6 +125,10 @@ class GameScene: SKScene {
                     let newScene = MainMenuScene(size: self.size)
                     newScene.scaleMode = .aspectFill
                     view?.presentScene(newScene)
+                case "take_cover":
+                    for troop in troops {
+                        troop.takeCover(in: self)
+                    }
                 default:
                     isAttacking.toggle()
                     attackModeIndicator.isHidden = !isAttacking

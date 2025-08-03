@@ -101,6 +101,34 @@ class Spitter: Enemy {
     }
 }
 
+class Teleporter: Enemy {
+    // Teleporters can teleport around the level
+    override func update(player: Player) {
+        if Int.random(in: 0...200) < 1 {
+            let randomX = CGFloat.random(in: self.scene!.frame.minX...self.scene!.frame.maxX)
+            let randomY = CGFloat.random(in: self.scene!.frame.minY...self.scene!.frame.maxY)
+            self.position = CGPoint(x: randomX, y: randomY)
+        }
+        super.update(player: player)
+    }
+}
+
+class Healer: Enemy {
+    // Healers can heal other enemies
+    override func update(player: Player) {
+        if Int.random(in: 0...100) < 2 {
+            for node in self.scene!.children {
+                if let enemy = node as? Enemy, enemy !== self {
+                    if self.position.distance(to: enemy.position) < 100 {
+                        enemy.health += 10
+                    }
+                }
+            }
+        }
+        super.update(player: player)
+    }
+}
+
 class Charger: Enemy {
     // Chargers charge at the player
     private var isCharging = false

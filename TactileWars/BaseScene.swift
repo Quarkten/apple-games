@@ -6,6 +6,11 @@ class BaseScene: SKScene {
     private var selectedDefense: DefenseType?
 
     override func didMove(to view: SKView) {
+        let background = SKSpriteNode(imageNamed: "base_background.png")
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        background.zPosition = -1
+        addChild(background)
+
         // Create defense selection buttons
         let mineButton = SKLabelNode(fontNamed: "Chalkduster")
         mineButton.text = "Mine"
@@ -115,11 +120,11 @@ class BaseScene: SKScene {
         let defense: DefenseStructure
         switch type {
         case .mine:
-            defense = Mine(texture: nil, color: .red, size: CGSize(width: 40, height: 40))
+            defense = Mine(type: .mine)
         case .tank:
-            defense = Tank(texture: nil, color: .gray, size: CGSize(width: 80, height: 80))
+            defense = Tank(type: .tank)
         case .cannon:
-            defense = Cannon(texture: nil, color: .black, size: CGSize(width: 60, height: 60))
+            defense = Cannon(type: .cannon)
         }
         defense.position = position
         defenses.append(defense)

@@ -4,6 +4,11 @@ class WorldMapScene: SKScene {
     private var aiPlayers: [Player] = []
 
     override func didMove(to view: SKView) {
+        let background = SKSpriteNode(imageNamed: "world_map_background.png")
+        background.position = CGPoint(x: frame.midX, y: frame.midY)
+        background.zPosition = -1
+        addChild(background)
+
         // Create AI players
         aiPlayers.append(Player(name: "AI 1", color: .red))
         aiPlayers.append(Player(name: "AI 2", color: .green))

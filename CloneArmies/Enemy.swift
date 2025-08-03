@@ -4,6 +4,7 @@ enum EnemyState {
     case idle
     case chasing
     case attacking
+    case flanking
 }
 
 class Enemy: Troop {
@@ -39,9 +40,26 @@ class Enemy: Troop {
             }
         case .attacking:
             // Attack the player
-            if self.position.distance(to: player.position) > 150 {
+            if self.health < 30 {
+                self.takeCover(in: self.scene!)
+            } else if Int.random(in: 0...100) < 10 {
+                state = .flanking
+            } else if self.position.distance(to: player.position) > 150 {
                 state = .chasing
             }
+        case .flanking:
+            flank(player: player, dt: dt)
+        }
+    }
+
+    func flank(player: Player, dt: TimeInterval) {
+        let flankDirection = CGVector(dx: -player.position.y, dy: player.position.x).normalized()
+        let flankPosition = player.position + flankDirection * 100
+        let direction = (flankPosition - self.position).normalized()
+        let velocity = direction * 100.0
+        self.position += velocity * CGFloat(dt)
+        if self.position.distance(to: flankPosition) < 10 {
+            state = .attacking
         }
     }
 }

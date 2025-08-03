@@ -1,28 +1,28 @@
 import SpriteKit
 
 extension CGPoint {
-    static func + (left: CGPoint, right: CGPoint) -> CGPoint {
-        return CGPoint(x: left.x + right.x, y: left.y + right.y)
+    func distance(to point: CGPoint) -> CGFloat {
+        return sqrt(pow(x - point.x, 2) + pow(y - point.y, 2))
+    }
+
+    func normalized() -> CGPoint {
+        let length = distance(to: .zero)
+        return CGPoint(x: x / length, y: y / length)
     }
 
     static func - (left: CGPoint, right: CGPoint) -> CGPoint {
         return CGPoint(x: left.x - right.x, y: left.y - right.y)
     }
-}
 
-extension CGSize {
-    static func + (left: CGSize, right: CGSize) -> CGSize {
-        return CGSize(width: left.width + right.width, height: left.height + right.height)
-    }
-}
-
-extension CGPoint {
-    func distance(to point: CGPoint) -> CGFloat {
-        return sqrt(pow(point.x - x, 2) + pow(point.y - y, 2))
+    static func * (point: CGPoint, scalar: CGFloat) -> CGPoint {
+        return CGPoint(x: point.x * scalar, y: point.y * scalar)
     }
 
-    func normalized() -> CGPoint {
-        let length = self.distance(to: .zero)
-        return CGPoint(x: self.x / length, y: self.y / length)
+    static func += (left: inout CGPoint, right: CGPoint) {
+        left = CGPoint(x: left.x + right.x, y: left.y + right.y)
+    }
+
+    static func + (left: CGPoint, right: CGVector) -> CGPoint {
+        return CGPoint(x: left.x + right.dx, y: left.y + right.dy)
     }
 }
